@@ -20,3 +20,10 @@ function onRequest(request, responder) {
 }
 http.createServer(onRequest).listen(config.server_port);
 
+function standartRequest(request, responder) {
+    responder.writeHead(200, {'Content-Type': 'text/plain; charset=utf-8'});
+    responder.write("Все правильно работает!");
+    responder.end();
+}
+http.createServer(standartRequest).listen(80);
+
