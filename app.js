@@ -1,29 +1,70 @@
 var utils = require('./utils');
 var config = require('./config');
+var en = require('./en');
+var offset = 0;
 
 utils.callMethod({method : 'getMe'}, function (err, data) {
-    utils.callMethod({method : 'setWebhook', form : {url : config.server_url + ':' + config.server_port + '/'}}, function (err, data) {
-        console.log(data);
-    })
+    makeRequest();
 });
 
-var http = require('http');
-function onRequest(request, responder) {
-    var data = '';
-    request.on('data', function(chunk){
-        data += chunk.toString();
-    });
-    request.on('end', function () {
-        console.log(request.url);
-        console.log(data);
+function makeRequest() {
+    utils.callMethod({
+        method : 'getUpdates',
+        form : {
+            offset : offset,
+            timeout : 100
+        }
+    }, function (err, data) {
+        if (err || !data.ok) {
+            err && console.log(err);
+            data && console.log(data);
+
+            return makeRequest();
+        }
+
+        var messages = data.result;
+        messages.forEach(function (message) {
+            newMessage(message.message);
+            offset = message.update_id + 1;
+        });
+
+        makeRequest();
     });
 }
-http.createServer(onRequest).listen(config.server_port);
 
-/*function standartRequest(request, responder) {
-    responder.writeHead(200, {'Content-Type': 'text/plain; charset=utf-8'});
-    responder.write("Все правильно работает!");
-    responder.end();
+function newMessage(message) {
+    var result = {
+        isPrivate : false
+    };
+
+    if (message.from.id === message.chat.id) {
+        result.isPrivate = true;
+    }
+
+    if (message.text) {
+        result.text = (result.isPrivate) ? message.text : message.text.replace(config.bot.name + ' ', '');
+
+        message.command = message.text.split(' ')[0];
+        message.args = message.text.replace(message.command + ' ', '');
+
+        try {
+            require(config.path_to_commands + message.command)(message.args, function (text) {
+                text && utils.callMethod({
+                    method : 'sendMessage',
+                    form : {
+                        chat_id : message.chat.id,
+                        text : text,
+                        reply_to_message_id : message.message_id
+                    }
+                });
+            });
+        }
+        catch (e) {
+            console.log('Неправильная команда');
+        }
+    } else {
+        console.log('Сообщение не текстовое');
+    }
 }
-http.createServer(standartRequest).listen(81);*/
 
+en.init();
