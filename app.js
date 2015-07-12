@@ -1,7 +1,7 @@
 var utils = require('./utils');
 var config = require('./config');
-var en = require('./en');
 var offset = 0;
+var starten = require('./commands/starten');
 
 utils.callMethod({method : 'getMe'}, function (err, data) {
     makeRequest();
@@ -34,7 +34,7 @@ function makeRequest() {
 
 function newMessage(message) {
     var result = {
-        isPrivate : false
+        isPrivate: false
     };
 
     if (message.from.id === message.chat.id) {
@@ -42,19 +42,22 @@ function newMessage(message) {
     }
 
     if (message.text) {
+        console.log(message.text);
         result.text = (result.isPrivate) ? message.text : message.text.replace(config.bot.name + ' ', '');
 
         message.command = message.text.split(' ')[0];
-        message.args = message.text.replace(message.command + ' ', '');
+        message.args = message.text.replace(message.command + ' ', '').replace(message.command, '');
+        console.log(message.command);
+        console.log(message.args);
 
         try {
             require(config.path_to_commands + message.command)(message.args, function (text) {
                 text && utils.callMethod({
-                    method : 'sendMessage',
-                    form : {
-                        chat_id : message.chat.id,
-                        text : text,
-                        reply_to_message_id : message.message_id
+                    method: 'sendMessage',
+                    form: {
+                        chat_id: message.chat.id,
+                        text: text,
+                        reply_to_message_id: message.message_id
                     }
                 });
             });
@@ -66,5 +69,3 @@ function newMessage(message) {
         console.log('Сообщение не текстовое');
     }
 }
-
-en.init();
