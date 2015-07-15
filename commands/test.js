@@ -1,3 +1,3 @@
 module.exports = function (params, callback) {
-    callback(params);
+    callback(params || "Отсутствует аргумент");
 };

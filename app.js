@@ -1,7 +1,6 @@
 var utils = require('./utils');
 var config = require('./config');
 var offset = 0;
-var starten = require('./commands/starten');
 
 utils.callMethod({method : 'getMe'}, function (err, data) {
     makeRequest();
@@ -38,7 +37,26 @@ function newMessage(message) {
     };
 
     if (message.from.id === message.chat.id) {
-        result.isPrivate = true;
+        require(config.path_to_private_commands + 'code')(message.text, function (text) {
+            if (!text) return;
+            utils.callMethod({
+                method: 'sendMessage',
+                form: {
+                    chat_id: message.chat.id,
+                    text: text,
+                    reply_to_message_id: message.message_id
+                }
+            });
+            utils.callMethod({
+                method: 'sendMessage',
+                form: {
+                    chat_id: config.game.chat_id,
+                    text: text,
+                    reply_to_message_id: message.message_id
+                }
+            });
+        });
+        return;
     }
 
     if (message.text) {
@@ -48,6 +66,7 @@ function newMessage(message) {
         message.command = message.text.split(' ')[0];
         message.args = message.text.replace(message.command + ' ', '').replace(message.command, '');
         console.log(message.command);
+        console.log(config.path_to_commands + message.command);
         console.log(message.args);
 
         try {
@@ -63,7 +82,10 @@ function newMessage(message) {
             });
         }
         catch (e) {
-            console.log('Неправильная команда');
+            console.log('<- ERROR START ------------------------------------------------------------------------------>');
+            console.log(e.message);
+            console.log(e.stack);
+            console.log('<- ERROR END -------------------------------------------------------------------------------->');
         }
     } else {
         console.log('Сообщение не текстовое');
