@@ -35,12 +35,16 @@ function getLevelState($, body) {
 
     var taskData = getTaskParts($, body);
 
+    levelState.isBlocked = $('.aside .blocked').length > 0;
+    levelState.blockageInfo = $('.aside .blockageinfo').text().replace( /\s+$/g, '').replace( /^\s+/g, '').replace('\n', ' ') || '';
     levelState.levelId = $('.aside form input[name="LevelId"]').val();
     levelState.levelNumber = $('.aside form input[name="LevelNumber"]').val();
-    levelState.time = Number($('h3.timer').text().match(/"StartCounter":([\d]+)/)[1]);
+    levelState.time = ($('h3.timer').length > 0) ? Number($('h3.timer').text().match(/"StartCounter":([\d]+)/)[1]) : 99999999;
     levelState.task = taskData.task;
     levelState.hints = taskData.hints;
-    levelState.timeMessage = $('h3.timer span').text();
+    levelState.timeMessage = $('h3.timer span').text() || "без автоперехода";
+    levelState.codesCount = taskData.codesCount;
+    levelState.codesLeft = taskData.codesLeft;
 
     return levelState;
 }
@@ -49,6 +53,8 @@ function getTaskParts($, body) {
     var parts = body.split('<div class="spacer"></div>');
     var task = '';
     var hints = [];
+    var codesCount = "На уровне 1 код";
+    var codesLeft = "осталось закрыть 1";
 
     parts.forEach(function (part) {
         var header = part.match(/<h3>([\s\S\d]+)<\/h3>/);
@@ -63,11 +69,22 @@ function getTaskParts($, body) {
         }
 
         if (cursiv && cursiv[1].indexOf('Подсказка') !== -1) {
-            hints.push({time : parseHtmlString(cursiv[1].match(/<span class="bold_off"[\s\S\d]+>([\s\S\d]+)<\/span>/)[1])});
+            hints.push({
+                value : cursiv[1].match(/"StartCounter":([\d]+)/)[1],
+                send : [],
+                message : parseHtmlString(cursiv[1].match(/<span class="bold_off"[\s\S\d]+>([\s\S\d]+)<\/span>/)[1])
+            });
+        }
+
+        if (header && header[1].indexOf('сектор') !== -1) {
+            codesCount = 'На уровне ' + header[1].match(/([\d]+)/)[1] + ' секторов';
+            codesLeft = header[1].match(/>\(([\s\S\d]+)\)</)[1];
         }
     });
 
     return {
+        codesCount : codesCount,
+        codesLeft : codesLeft,
         task : task,
         hints : hints
     };

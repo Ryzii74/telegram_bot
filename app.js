@@ -37,25 +37,58 @@ function newMessage(message) {
     };
 
     if (message.from.id === message.chat.id) {
-        require(config.path_to_private_commands + 'code')(message.text, function (text) {
-            if (!text) return;
-            utils.callMethod({
-                method: 'sendMessage',
-                form: {
-                    chat_id: message.chat.id,
-                    text: text,
-                    reply_to_message_id: message.message_id
-                }
-            });
-            utils.callMethod({
-                method: 'sendMessage',
-                form: {
-                    chat_id: config.game.chat_id,
-                    text: text,
-                    reply_to_message_id: message.message_id
-                }
-            });
-        });
+        try {
+            if (message.text[0] && message.text[0] === '/') {
+                require(config.path_to_commands + message.text)((message.text === '/getid') ? message.chat.id : message.text, function (text) {
+                    if (!text) return;
+                    utils.callMethod({
+                        method: 'sendMessage',
+                        form: {
+                            chat_id: message.chat.id,
+                            text: text,
+                            reply_to_message_id: message.message_id
+                        }
+                    });
+                });
+            } else {
+                require(config.path_to_private_commands + 'code')(message.text, function (text) {
+                    utils.callMethod({
+                        method: 'forwardMessage',
+                        form: {
+                            chat_id: config.game.chat_id,
+                            from_chat_id: message.chat.id,
+                            message_id: message.message_id
+                        }
+                    }, function () {
+                        if (!text) return;
+                        utils.callMethod({
+                            method: 'sendMessage',
+                            form: {
+                                chat_id: config.game.chat_id,
+                                text: text,
+                                reply_to_message_id: message.message_id
+                            }
+                        });
+                    });
+
+                    if (!text) return;
+                    utils.callMethod({
+                        method: 'sendMessage',
+                        form: {
+                            chat_id: message.chat.id,
+                            text: text,
+                            reply_to_message_id: message.message_id
+                        }
+                    });
+                });
+            }
+        }
+        catch (e) {
+            console.log('<- ERROR START ------------------------------------------------------------------------------>');
+            console.log(e.message);
+            console.log(e.stack);
+            console.log('<- ERROR END -------------------------------------------------------------------------------->');
+        }
         return;
     }
 
@@ -65,9 +98,6 @@ function newMessage(message) {
 
         message.command = message.text.split(' ')[0];
         message.args = message.text.replace(message.command + ' ', '').replace(message.command, '');
-        console.log(message.command);
-        console.log(config.path_to_commands + message.command);
-        console.log(message.args);
 
         try {
             require(config.path_to_commands + message.command)(message.args, function (text) {

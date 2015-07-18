@@ -5,10 +5,16 @@ module.exports = {
     },
 
     game : {
-        url : 'http://demo.en.cx/gameengines/encounter/play/23373/',
-        chat_id : "-33965431",
-        referer : "http://demo.en.cx/GameDetails.aspx?gid=23373",
-        cookie : "GUID=fec7537b%2D4a20%2D4457%2Daeb3%2D2651bb28a7d7; stoken=hlsu2bbh2b1uxzjc2ljezq1n; __utma=142023398.1745113043.1436693934.1436693934.1436693934.1; __utmc=142023398; __utmz=142023398.1436693934.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); check=1; atoken=uid%3d155137%26iss%3d0%26iscd%3d1%26tkn%3df05fc2bee9b494da841c1ce232730c9771fc44b0; lang=ru; __utma=194284216.967903958.1436693709.1436891609.1436895451.6; __utmc=194284216; __utmz=194284216.1436693709.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); stoken=hlsu2bbh2b1uxzjc2ljezq1n; Domain=demo%2Een%2Ecx"
+        //url : 'http://demo.en.cx/gameengines/encounter/play/23373',
+        url : 'http://chel.en.cx/gameengines/encounter/play/50948',
+        host : 'chel.en.cx',
+        //chat_id : "-33965431",
+        chat_id : "-31988268",
+        //referer : "http://demo.en.cx/gameengines/encounter/play/23373",
+        referer : "http://chel.en.cx/GameDetails.aspx?gid=50948",
+        cookie :   "GUID=f6af7916%2D561b%2D460f%2D9d3a%2Db2773918ff10; __utmt_t0=1; check=1; atoken=uid%3d1416666%26iss%3d0%26iscd%3d1%26tkn%3d719387eda0d25411c161267649c5b0584c8345ef; _ym_visorc_11409715=w; lang=ru; __utma=197665149.1157910272.1420107378.1437196256.1437199161.83; __utmb=197665149.12.10.1437199161; __utmc=197665149; __utmz=197665149.1434693275.71.9.utmcsr=vk.com|utmccn=(referral)|utmcmd=referral|utmcct=/en454000; Domain=chel%2Een%2Ecx; stoken=v4j54pyyxbzuhqypseryyddv",
+        //cookie : "GUID=f6af7916%2D561b%2D460f%2D9d3a%2Db2773918ff10; __utma=142023398.1745113043.1436693934.1436693934.1436693934.1; __utmc=142023398; __utmz=142023398.1436693934.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); __utmt_t0=1; check=1; atoken=uid%3d181101%26iss%3d0%26iscd%3d1%26tkn%3db71f0c7459d1f31483ff37183c1cf17536c8f3fb; lang=ru; __utma=197665149.1157910272.1420107378.1437196256.1437199161.83; __utmb=197665149.7.10.1437199161; __utmc=197665149; __utmz=197665149.1434693275.71.9.utmcsr=vk.com|utmccn=(referral)|utmcmd=referral|utmcct=/en454000; _ym_visorc_11409715=w; Domain=chel%2Een%2Ecx; stoken=v4j54pyyxbzuhqypseryyddv",
+        players : ["21544566"]
     },
 
     path_to_commands : './commands/',

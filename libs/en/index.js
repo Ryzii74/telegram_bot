@@ -2,6 +2,9 @@ var utils = require('./../../utils');
 var enRequest = require('./request');
 var parser = require('./parser');
 
+var times = [60, 180, 300];
+
+
 function Level (data) {
     this.levelId = data.levelId;
     this.levelNumber = data.levelNumber;
@@ -11,7 +14,22 @@ function Level (data) {
         send : [],
         message : data.timeMessage
     };
-    this.hints = [];
+    markAlreaddyHinted(this.time);
+    this.blockageInfo = data.blockageInfo;
+    this.hints = data.hints;
+    this.hints.forEach(function (hint) {
+        if (hint.text) return;
+        markAlreaddyHinted(hint);
+    });
+
+    this.codesCount = data.codesCount;
+    this.codesLeft = data.codesLeft;
+}
+
+function markAlreaddyHinted(obj) {
+    times.forEach(function (time) {
+        if (time > obj.value) { obj.send.push(time); }
+    });
 }
 
 function Game() {
@@ -42,12 +60,12 @@ Game.prototype.updateStartState = function ($) {
         return utils.sendMessageToChat(this.start.message);
     }
 
-    return checkTimerMessage(this.start.time, this.start.message);
+    checkTimerMessage(this.start.time, 'До начала игры осталось: ');
 };
 
 Game.prototype.getLevelTime = function (callback) {
     if (!this.isStarted(callback)) return;
-    return 'До окончания задания: ' + this.levels.slice(-1)[0].time.message;
+    return 'До окончания задания: ' + this.levels.slice(-1)[0].time.message || "без автоперехода";
 };
 
 Game.prototype.getHints = function (callback) {
@@ -57,25 +75,15 @@ Game.prototype.getHints = function (callback) {
         if (item.text) {
             message += 'Подсказка #' + (index + 1) + '.\n' + item.text + '\n';
         } else {
-            message += 'Подсказка #' + (index + 1) + ' через ' + item.time + '\n';
+            message += 'Подсказка #' + (index + 1) + ' через ' + item.message + '\n';
         }
     });
 
-    return message;
+    return message || 'Подсказок нет!';
 };
 
 Game.prototype.addLevel = function (levelState) {
-    var level = new Level({
-        levelId : levelState.levelId,
-        levelNumber : levelState.levelNumber,
-        task : levelState.task,
-        hints : levelState.hints,
-        time : {
-            value : levelState.time,
-            send : [],
-            message : levelState.timeMessage
-        }
-    });
+    var level = new Level(levelState);
     /*level.hints.forEach(function (hint) {
         hint.time = {
             send : [],
@@ -85,12 +93,25 @@ Game.prototype.addLevel = function (levelState) {
     this.levels.push(level);
 
     var message = 'Задание ' + level.levelNumber;
-    message += '\n' + this.getTask();
+    message += '\n' + this.getTask() + '\n\n';
     message += this.getHints();
     message += '\n\n';
     message += this.getLevelTime();
+    message += '\n' + this.getCodesCount();
+    if (level.blockageInfo) message += '\n' + level.blockageInfo;
 
     return message && utils.sendMessageToChat(message);
+};
+
+Game.prototype.getCodesCount = function () {
+    var lastLevel = this.levels.slice(-1)[0];
+
+    if (!lastLevel) return 'Уровень не найден!';
+
+    var message = lastLevel.codesCount;
+    message += '\n' + lastLevel.codesLeft;
+
+    return message;
 };
 
 Game.prototype.findNewHints = function (levelState) {
@@ -117,29 +138,47 @@ Game.prototype.updateLevelState = function ($, body) {
         return;
     }
 
-    if (this.levels.length === 0 ||
-        this.levels.slice(-1)[0].levelId !== levelState.levelId)
+    if ((this.levels.length === 0 ||
+        this.levels.slice(-1)[0].levelId !== levelState.levelId) && !levelState.isBlocked)
     {
         return this.addLevel(levelState);
     }
+
+    if (this.levels.length === 0) return;
 
     this.findNewHints(levelState);
 
     var lastLevel = this.levels.slice(-1)[0];
     lastLevel.task = levelState.task;
-    lastLevel.hints = levelState.hints;
-    lastLevel.time.value = levelState.time;
+    lastLevel.time.value  = levelState.time;
     lastLevel.time.message = levelState.timeMessage;
+    lastLevel.codesCount = levelState.codesCount;
+    lastLevel.codesLeft = levelState.codesLeft;
 
-    checkTimerMessage(lastLevel.time, lastLevel.time.message);
-    /*lastLevel.hints.filter(function (item) { return item.text; }).forEach(function (hint) {
+    lastLevel.hints.forEach(function (item, index) {
+        if (levelState.hints[index].text) {
+            item.text = levelState.hints[index].text;
+            delete item.message;
+            delete item.value;
+            delete item.send;
+        } else {
+            item.message = levelState.hints[index].message;
+            item.value = levelState.hints[index].value;
+        }
+    });
 
-    });*/
+    checkTimerMessage(lastLevel.time, 'До конца уровня осталось: ');
+
+    lastLevel.hints.filter(function (item) { return !item.text; }).forEach(function (hint, index) {
+        checkTimerMessage(hint, 'До подсказки #' + (index + 1) + ' осталось: ');
+    });
 };
 
-Game.prototype.update = function () {
+Game.prototype.update = function (data, callback) {
     var _this = this;
-    enRequest({}, function ($, body) {
+    data = data || {};
+
+    enRequest(data, function ($, body) {
         if (!_this.isStarted()) {
             _this.updateStartState($);
         }
@@ -147,6 +186,8 @@ Game.prototype.update = function () {
         if (_this.isStarted()) {
             _this.updateLevelState($, body);
         }
+
+        callback && callback($, body);
     });
 };
 
@@ -202,7 +243,14 @@ Game.prototype.sendCode = function (code, callback) {
 
     var _this = this;
     var lastLevel = this.levels.slice(-1)[0];
-    enRequest({
+    var levelId = lastLevel.levelId;
+
+    if (lastLevel.blockageInfo) {
+        return callback();
+        //return callback('Блокировка ответов! ' + lastLevel.blockageInfo);
+    }
+
+    this.update({
         LevelId : lastLevel.levelId,
         LevelNumber : lastLevel.LevelNumber,
         "LevelAction.Answer" : code
@@ -212,7 +260,9 @@ Game.prototype.sendCode = function (code, callback) {
         }
 
         if ($('.aside .color_correct').length > 0) {
-            return callback('Код принят');
+            var lastLevel = _this.levels.slice(-1)[0];
+            var message = (levelId == lastLevel.levelId) ? lastLevel.codesLeft : "Новый уровень!";
+            return callback('Код принят! ' + message);
         }
 
         if (_this.state !== 'stop') {
@@ -236,6 +286,9 @@ module.exports.getStartMessage = function (params, callback) {
 module.exports.getTask = function (callback) {
     return game.getTask(callback);
 };
+module.exports.getCodesCount = function (callback) {
+    callback(game.getCodesCount());
+};
 module.exports.init = function (params, callback) {
     game.init(params, callback);
 };
@@ -253,11 +306,10 @@ module.exports.getTime = function (callback) {
 };
 
 function checkTimerMessage(obj, message) {
-    var times = [60, 180, 300];
     times.forEach(function (time) {
         if (obj.value < time && obj.send.indexOf(time) === -1) {
             obj.send.push(time);
-            return utils.sendMessageToChat(message);
+            utils.sendMessageToChat(message + Math.floor(time / 60) + ' минут');
         }
     });
 }
