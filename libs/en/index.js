@@ -1,6 +1,7 @@
 var utils = require('./../../utils');
 var enRequest = require('./request');
 var parser = require('./parser');
+var config = require('../../config');
 
 var times = [60, 180, 300];
 
@@ -207,8 +208,7 @@ Game.prototype.update = function (data, callback) {
     var _this = this;
 
     data = data || {};
-
-    enRequest(data, function ($, body) {
+    enRequest(data, this.cookies, function ($, body) {
         if (!_this.isStarted()) {
             _this.updateStartState($);
         }
@@ -222,15 +222,18 @@ Game.prototype.update = function (data, callback) {
 };
 
 Game.prototype.init = function (params, callback) {
-    if (this.state !== 'wait') return callback('Бот уже проинициализировал игру! ' + this.start.message);
-    callback('Я к Вашим услугам!');
+    require('request').post(config.system.url.start + config.game.host + config.system.login, config.game.auth, function (err, response, data) {
+        this.cookies = response.headers['set-cookie'].join('');
+        if (this.state !== 'wait') return callback('Бот уже проинициализировал игру! ' + this.start.message);
+        callback('Я к Вашим услугам!');
 
-    this.update();
+        this.update();
 
-    var _this = this;
-    this.requestInterval = setInterval(function () {
-        _this.update();
-    }, 5000);
+        var _this = this;
+        this.requestInterval = setInterval(function () {
+            _this.update();
+        }, 5000);
+    }.bind(this));
 };
 
 Game.prototype.getStartMessage = function (params, callback) {

@@ -11,6 +11,8 @@ var playersList = {
     aiv : 51493810
 };
 
+const testChat = "-33965431";
+
 module.exports = {
     bot : {
         url : "https://api.telegram.org/bot115498454:AAFPBBUy6Em-8DkDfp38UfBuH7sP28v6vV8/",
@@ -22,13 +24,18 @@ module.exports = {
         url : {
             start : 'http://',
             end : '/gameengines/encounter/play/'
-        }
+        },
+        login : "/Login.aspx"
     },
 
     game : {
-        host : 'chel.en.cx',
-        id : '53650',
-        chat_id : "-46327989",
+        host : 'demo.en.cx',
+        id : '23373',
+        chat_id : testChat,
+        auth : {
+            Login : "cheltest",
+            Password : "kontora2115"
+        },
         players : [
             playersList.ryzii,
             playersList.lyolya,
