@@ -22,8 +22,11 @@ function Level (data) {
         markAlreaddyHinted(hint);
     });
 
+    this.bonuses = data.bonuses;
     this.codesCount = data.codesCount;
     this.codesLeft = data.codesLeft;
+
+    console.log(this.bonuses);
 }
 
 function markAlreaddyHinted(obj) {
@@ -51,6 +54,8 @@ Game.prototype.updateStartState = function ($) {
     if (state.started) {
         this.state = 'started';
     }
+
+    console.log(state);
 
     this.start.message = state.message;
     this.start.time.value = state.time;
@@ -98,18 +103,41 @@ Game.prototype.addLevel = function (levelState) {
     message += '\n\n';
     message += this.getLevelTime();
     message += '\n' + this.getCodesCount();
+    message += '\n' + this.getBonusesCount();
+    message += this.getBonusesTasks();
     if (level.blockageInfo) message += '\n' + level.blockageInfo;
 
     return message && utils.sendMessageToChat(message);
 };
 
+Game.prototype.getBonusesTasks = function () {
+    var lastLevel = this.levels.slice(-1)[0];
+    if (!lastLevel) return 'Уровень не найден!';
+
+    var result = '';
+    lastLevel.bonuses.forEach(function (bonus) {
+        if (!bonus.task) return;
+        result += '\n\nЗадание на "' + bonus.name + '"';
+        result += '\n' + bonus.task;
+    });
+
+    return result;
+};
+
+Game.prototype.getBonusesCount = function () {
+    var lastLevel = this.levels.slice(-1)[0];
+    if (!lastLevel) return 'Уровень не найден!';
+
+    return 'Бонусов выполнено ' + lastLevel.bonuses.filter(function (bonus) { return bonus.completed; }).length + ' из ' + lastLevel.bonuses.length;
+};
+
 Game.prototype.getCodesCount = function () {
     var lastLevel = this.levels.slice(-1)[0];
-
     if (!lastLevel) return 'Уровень не найден!';
 
     var message = lastLevel.codesCount;
     message += '\n' + lastLevel.codesLeft;
+    message += '\n' + this.getBonusesCount();
 
     return message;
 };
@@ -154,6 +182,7 @@ Game.prototype.updateLevelState = function ($, body) {
     lastLevel.time.message = levelState.timeMessage;
     lastLevel.codesCount = levelState.codesCount;
     lastLevel.codesLeft = levelState.codesLeft;
+    lastLevel.bonuses = levelState.bonuses;
 
     lastLevel.hints.forEach(function (item, index) {
         if (levelState.hints[index].text) {
@@ -176,6 +205,7 @@ Game.prototype.updateLevelState = function ($, body) {
 
 Game.prototype.update = function (data, callback) {
     var _this = this;
+
     data = data || {};
 
     enRequest(data, function ($, body) {
@@ -254,7 +284,7 @@ Game.prototype.sendCode = function (code, callback) {
         LevelId : lastLevel.levelId,
         LevelNumber : lastLevel.LevelNumber,
         "LevelAction.Answer" : code
-    }, function ($, body) {
+    }, function ($, body, codes) {
         if ($('.aside #incorrect').length > 0) {
             return callback('Код не принят');
         }
@@ -288,6 +318,9 @@ module.exports.getTask = function (callback) {
 };
 module.exports.getCodesCount = function (callback) {
     callback(game.getCodesCount());
+};
+module.exports.getBonusesTasks = function (callback) {
+    callback(game.getBonusesTasks());
 };
 module.exports.init = function (params, callback) {
     game.init(params, callback);

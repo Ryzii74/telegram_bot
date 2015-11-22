@@ -29,12 +29,20 @@ function makeRequest() {
 }
 
 function newMessage(message) {
+    if (message.text) message.text = message.text.replace(config.bot.bot, '');
     if (message.from.id === message.chat.id) return gotPrivateMessage(message);
     gotChatMessage(message);
 }
 
 function gotChatMessage(message) {
     if (!message.text) return;
+    if (message.chat.id != config.game.chat_id) {
+        console.log('-------------------------------------');
+        console.log('bad conf try to send message to bot');
+        console.log(message);
+        console.log('-------------------------------------');
+        return;
+    }
 
     message.command = message.text.split(' ')[0];
     message.args = message.text.replace(message.command + ' ', '').replace(message.command, '');

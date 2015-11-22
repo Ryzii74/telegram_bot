@@ -14,6 +14,7 @@ function getStartState($) {
         return state;
     }
 
+
     var $timeToStart = $('#Panel_TimerHolder');
     if ($timeToStart.length > 0) {
         state.time = Number($timeToStart.text().match(/"StartCounter":([\d]+)/)[1]);
@@ -45,6 +46,7 @@ function getLevelState($, body) {
     levelState.timeMessage = $('h3.timer span').text() || "без автоперехода";
     levelState.codesCount = taskData.codesCount;
     levelState.codesLeft = taskData.codesLeft;
+    levelState.bonuses = taskData.bonuses;
 
     return levelState;
 }
@@ -53,11 +55,14 @@ function getTaskParts($, body) {
     var parts = body.split('<div class="spacer"></div>');
     var task = '';
     var hints = [];
+    var bonuses = [];
     var codesCount = "На уровне 1 код";
     var codesLeft = "осталось закрыть 1";
 
     parts.forEach(function (part) {
         var header = part.match(/<h3>([\s\S\d]+)<\/h3>/);
+        var bonusHeader = part.match(/<h3 class="color_bonus">([\s\S\d]+)<\/h3>/);
+        var bonusCorrectHeader = part.match(/<h3 class="color_correct">([\s\S\d]+)<\/h3>/);
         var cursiv = part.match(/<span class="color_dis">([\s\S\d]+)<\/span>/);
 
         if (header && header[1].indexOf('Задание') !== -1) {
@@ -78,7 +83,28 @@ function getTaskParts($, body) {
 
         if (header && header[1].indexOf('сектор') !== -1) {
             codesCount = 'На уровне ' + header[1].match(/([\d]+)/)[1] + ' секторов';
-            codesLeft = header[1].match(/>\(([\s\S\d]+)\)</)[1];
+            codesLeft = header[1].match(/>\(([\s\S\d]+)\)</) && header[1].match(/>\(([\s\S\d]+)\)</)[1] || 'все';
+        }
+
+        if (bonusHeader && bonusHeader[1].indexOf('Бонус') !== -1) {
+            var bonus = {
+                completed : false,
+                name : parseHtmlString(bonusHeader[1].split(':')[1]),
+                task : parseHtmlString(part.replace(/<h3([\s\S\d]+)<\/h3>/, '')),
+                reward : 0
+            };
+            bonuses.push(bonus);
+        }
+
+
+        if (bonusCorrectHeader) {
+            var bonus = {
+                completed : true,
+                name : parseHtmlString(bonusCorrectHeader[1].split(':')[1].split('<span')[0]),
+                task : parseHtmlString(part.replace(/<h3([\s\S\d]+)<\/h3>/, '')),
+                reward : bonusCorrectHeader[1].match(/награда ([\d]+)/)[1]
+            };
+            bonuses.push(bonus);
         }
     });
 
@@ -86,7 +112,8 @@ function getTaskParts($, body) {
         codesCount : codesCount,
         codesLeft : codesLeft,
         task : task,
-        hints : hints
+        hints : hints,
+        bonuses : bonuses
     };
 }
 

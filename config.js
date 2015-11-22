@@ -18,6 +18,7 @@ module.exports = {
     },
 
     game : {
+        userAgent : "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.86 Safari/537.36",
         //url : 'http://demo.en.cx/gameengines/encounter/play/23373',
         url : 'http://chel.en.cx/gameengines/encounter/play/53650',
         host : 'chel.en.cx',
