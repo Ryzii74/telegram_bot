@@ -3,13 +3,14 @@ var cheerio = require('cheerio');
 var config = require('../../config');
 
 module.exports = function (data, callback) {
+    var url = config.system.url.start + config.game.host + config.system.url.end;
     request.post({
-        url : config.game.url,
+        url : url + config.game.id,
         form : data,
         headers : {
             cookie : config.game.cookie,
-            "User-Agent" : config.game.userAgent,
-            "Referer" : config.game.referer,
+            "User-Agent" : config.system.userAgent,
+            "Referer" : url + config.game.id,
             "Host" : config.game.host
         }
     }, function (err, request, body) {
