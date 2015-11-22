@@ -113,3 +113,10 @@ function gotPrivateMessage(message) {
         console.log('<- ERROR END -------------------------------------------------------------------------------->');
     }
 }
+
+process.on('uncaughtException', function(err) {
+    console.log('------------------------');
+    console.log('Caught exception: ' + err);
+    console.log(err.stack);
+    console.log('------------------------');
+});
