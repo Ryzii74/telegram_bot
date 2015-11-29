@@ -53,10 +53,7 @@ function gotChatMessage(message) {
         });
     }
     catch (e) {
-        console.log('<- ERROR START ------------------------------------------------------------------------------>');
         console.log(e.message);
-        console.log(e.stack);
-        console.log('<- ERROR END -------------------------------------------------------------------------------->');
     }
 }
 
@@ -119,4 +116,17 @@ process.on('uncaughtException', function(err) {
     console.log('Caught exception: ' + err);
     console.log(err.stack);
     console.log('------------------------');
+});
+
+process.stdin.on('readable', function() {
+    var chunk = process.stdin.read();
+    if (chunk !== null) {
+        gotChatMessage({
+            text : chunk.toString().replace("\n", ''),
+            chat : {
+                id : config.game.chat_id,
+                message_id: 0
+            }
+        });
+    }
 });

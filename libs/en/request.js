@@ -15,7 +15,6 @@ module.exports = function (data, cookies, callback) {
         }
     }, function (err, request, body) {
         var $ = cheerio.load(body);
-        console.log(body);
         callback && callback($, body);
     });
 };

@@ -34,7 +34,10 @@ module.exports = {
         chat_id : testChat,
         auth : {
             Login : "cheltest",
-            Password : "kontora2115"
+            Password : "kontora2115",
+            socialAssign : 0,
+            EnButton1 : "Вход",
+            ddlNetwork : 1
         },
         players : [
             playersList.ryzii,

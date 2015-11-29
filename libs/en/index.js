@@ -26,8 +26,6 @@ function Level (data) {
     this.bonuses = data.bonuses;
     this.codesCount = data.codesCount;
     this.codesLeft = data.codesLeft;
-
-    console.log(this.bonuses);
 }
 
 function markAlreaddyHinted(obj) {
@@ -55,8 +53,6 @@ Game.prototype.updateStartState = function ($) {
     if (state.started) {
         this.state = 'started';
     }
-
-    console.log(state);
 
     this.start.message = state.message;
     this.start.time.value = state.time;
@@ -222,11 +218,17 @@ Game.prototype.update = function (data, callback) {
 };
 
 Game.prototype.init = function (params, callback) {
-    require('request').post(config.system.url.start + config.game.host + config.system.login, config.game.auth, function (err, response, data) {
-        this.cookies = response.headers['set-cookie'].join('');
+    require('request').post({
+        url : config.system.url.start + config.game.host + config.system.login,
+        form : config.game.auth,
+        headers : {
+            "User-Agent" : config.system.userAgent,
+            "Host" : config.game.host
+        }
+    }, function (err, response, data) {
+        this.cookies = response.headers['set-cookie'].map(function (el) { return el.split(';')[0]; }).join('; ');
         if (this.state !== 'wait') return callback('Бот уже проинициализировал игру! ' + this.start.message);
         callback('Я к Вашим услугам!');
-
         this.update();
 
         var _this = this;
