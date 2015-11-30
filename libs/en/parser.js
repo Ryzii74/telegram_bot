@@ -102,11 +102,12 @@ function getTaskParts($, body) {
                 completed : true,
                 name : parseHtmlString(bonusCorrectHeader[1].split(':')[1].split('<span')[0]),
                 task : parseHtmlString(part.replace(/<h3([\s\S\d]+)<\/h3>/, '')),
-                reward : bonusCorrectHeader[1].match(/награда ([\d]+)/) && bonusCorrectHeader[1].match(/награда ([\d]+)/)[1]
+                reward : bonusCorrectHeader[1].match(/награда ([\d\s\S]+)\)</) && bonusCorrectHeader[1].match(/награда ([\d\s\S]+)\)</)[1] || 'нету'
             };
             bonuses.push(bonus);
         }
     });
+
     return {
         codesCount : codesCount,
         codesLeft : codesLeft,

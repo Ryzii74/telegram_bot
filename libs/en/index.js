@@ -108,16 +108,34 @@ Game.prototype.addLevel = function (levelState) {
     return message && utils.sendMessageToChat(message);
 };
 
+Game.prototype.getBonusesHints = function () {
+    var lastLevel = this.levels.slice(-1)[0];
+    if (!lastLevel) return 'Уровень не найден!';
+
+    var result = '';
+    lastLevel.bonuses.forEach(function (bonus) {
+        if (!bonus.completed || !bonus.task) return;
+        result += 'Бонус "' + bonus.name + '"\n';
+        result += bonus.task + '\n\n';
+    });
+    if (result === '') result = 'Выполненных бонусов с подсказками нет';
+    result = this.getBonusesCount() +'\n' + result;
+
+    return result;
+};
+
 Game.prototype.getBonusesTasks = function () {
     var lastLevel = this.levels.slice(-1)[0];
     if (!lastLevel) return 'Уровень не найден!';
 
     var result = '';
     lastLevel.bonuses.forEach(function (bonus) {
-        if (!bonus.task) return;
-        result += '\n\nЗадание на "' + bonus.name + '"';
-        result += '\n' + bonus.task;
+        if (!bonus.task || bonus.completed) return;
+        result += 'Задание на "' + bonus.name + '"\n';
+        result += bonus.task + '\n\n';
     });
+    if (result === '') result = 'Невыполненных бонусов с заданиями нет';
+    result = this.getBonusesCount() +'\n' + result;
 
     return result;
 };
@@ -188,6 +206,7 @@ Game.prototype.updateLevelState = function ($, body) {
     lastLevel.time.message = levelState.timeMessage;
     lastLevel.codesCount = levelState.codesCount;
     lastLevel.codesLeft = levelState.codesLeft;
+    this.prevBonuses = lastLevel.bonuses;
     lastLevel.bonuses = levelState.bonuses;
 
     lastLevel.hints.forEach(function (item, index) {
@@ -312,8 +331,25 @@ Game.prototype.sendCode = function (code, callback) {
 
         if ($('.aside .color_correct').length > 0) {
             var lastLevel = _this.levels.slice(-1)[0];
-            var message = (levelId == lastLevel.levelId) ? lastLevel.codesLeft : "Новый уровень!";
-            return callback('Код принят! ' + message);
+            var message = 'Код принят! ';
+            if (levelId == lastLevel.levelId) {
+                message += lastLevel.codesLeft;
+
+                for (var i = 0; i < lastLevel.bonuses.length; i++) {
+                    if (lastLevel.bonuses[i].completed === true &&
+                        _this.prevBonuses[i].completed === false)
+                    {
+                        var bonus = lastLevel.bonuses[i];
+                        message += '\nБонусный код "' + bonus.name + '" принят, награда - ' + bonus.reward;
+                        message += '\nПодсказка бонуса: ';
+                        message += (bonus.task !== '') ? bonus.task : 'отсутствует';
+                    }
+                }
+            } else {
+                message += "Новый уровень!";
+            }
+
+            return callback(message);
         }
 
         if (_this.state !== 'stop') {
@@ -342,6 +378,9 @@ module.exports.getCodesCount = function (callback) {
 };
 module.exports.getBonusesTasks = function (callback) {
     callback(game.getBonusesTasks());
+};
+module.exports.getBonusesHints = function (callback) {
+    callback(game.getBonusesHints());
 };
 module.exports.init = function (params, callback) {
     game.init(params, callback);

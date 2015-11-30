@@ -34,8 +34,8 @@ module.exports = {
         id : '23373',
         chat_id : testChat,
         auth : {
-            Login : "cheltest",
-            Password : "kontora2115",
+            Login : "",
+            Password : "",
             socialAssign : 0,
             EnButton1 : "Вход",
             ddlNetwork : 1
