@@ -65,6 +65,7 @@ function getTaskParts($, body) {
         var bonusCorrectHeader = part.match(/<h3 class="color_correct">([\s\S\d]+)<\/h3>/);
         var cursiv = part.match(/<span class="color_dis">([\s\S\d]+)<\/span>/);
 
+        console.log(header);
         if (header && header[1].indexOf('Задание') !== -1) {
             task = parseHtmlString(part, header);
         }
@@ -107,7 +108,13 @@ function getTaskParts($, body) {
             bonuses.push(bonus);
         }
     });
-
+    console.log({
+        codesCount : codesCount,
+        codesLeft : codesLeft,
+        task : task,
+        hints : hints,
+        bonuses : bonuses
+    });
     return {
         codesCount : codesCount,
         codesLeft : codesLeft,

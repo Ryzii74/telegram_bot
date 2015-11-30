@@ -222,6 +222,7 @@ Game.prototype.init = function (params, callback) {
         url : config.system.url.start + config.game.host + config.system.login,
         form : config.game.auth,
         headers : {
+            "Cookie" : "lang=ru;",
             "User-Agent" : config.system.userAgent,
             "Host" : config.game.host
         }
