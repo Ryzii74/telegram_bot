@@ -35,6 +35,7 @@ function markAlreaddyHinted(obj) {
 }
 
 function Game() {
+    this.reconnect = false;
     this.state = 'wait';
     this.levels = [];
     this.start = {
@@ -158,9 +159,17 @@ Game.prototype.updateLevelState = function ($, body) {
     var levelState = parser.getLevelState($, body);
 
     if (levelState.stopped) {
+        if (!this.reconnect) return this.login(function () {
+            utils.sendMessageToChat('Подо мной кто-то зашел, но я перелогинился! Кто молодец? Я молодец! Но лучше не делайте так больше!');
+            this.reconnect = true;
+            this.update();
+        }.bind(this));
+
         if (this.state !== 'stop') utils.sendMessageToChat('Такое ощущение, что игра кончилась');
         this.state = 'stop';
         return;
+    } else {
+        this.reconnect = false;
     }
 
     if ((this.levels.length === 0 ||
@@ -200,6 +209,21 @@ Game.prototype.updateLevelState = function ($, body) {
     });
 };
 
+Game.prototype.login = function (callback) {
+    require('request').post({
+        url : config.system.url.start + config.game.host + config.system.login,
+        form : config.game.auth,
+        headers : {
+            "Cookie" : "lang=ru;",
+            "User-Agent" : config.system.userAgent,
+            "Host" : config.game.host
+        }
+    }, function (err, response, data) {
+        this.cookies = response.headers['set-cookie'].map(function (el) { return el.split(';')[0]; }).join('; ');
+        callback();
+    }.bind(this));
+};
+
 Game.prototype.update = function (data, callback) {
     var _this = this;
 
@@ -218,16 +242,7 @@ Game.prototype.update = function (data, callback) {
 };
 
 Game.prototype.init = function (params, callback) {
-    require('request').post({
-        url : config.system.url.start + config.game.host + config.system.login,
-        form : config.game.auth,
-        headers : {
-            "Cookie" : "lang=ru;",
-            "User-Agent" : config.system.userAgent,
-            "Host" : config.game.host
-        }
-    }, function (err, response, data) {
-        this.cookies = response.headers['set-cookie'].map(function (el) { return el.split(';')[0]; }).join('; ');
+    this.login(function () {
         if (this.state !== 'wait') return callback('Бот уже проинициализировал игру! ' + this.start.message);
         callback('Я к Вашим услугам!');
         this.update();
