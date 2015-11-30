@@ -1,4 +1,5 @@
-var playersList = {
+const testChat = "-33965431";
+const playersList = {
     ryzii : 59745477,
     kiseniya : 'Kiseniya',
     vental : 63910101,
@@ -11,9 +12,9 @@ var playersList = {
     aiv : 51493810
 };
 
-const testChat = "-33965431";
-
 module.exports = {
+    playersList : playersList,
+
     bot : {
         url : "https://api.telegram.org/bot115498454:AAFPBBUy6Em-8DkDfp38UfBuH7sP28v6vV8/",
         bot : '@testryziibot'
@@ -41,10 +42,7 @@ module.exports = {
         },
         players : [
             playersList.ryzii,
-            playersList.lyolya,
-            playersList.mashaMitina,
-            playersList.mitin,
-            playersList.aiv
+            playersList.kiseniya
         ]
     },
 
