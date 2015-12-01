@@ -391,6 +391,9 @@ module.exports.getHints = function (callback) {
 module.exports.getTime = function (callback) {
     return game.getLevelTime(callback);
 };
+module.exports.getLevels = function () {
+    return game.levels;
+};
 
 function checkTimerMessage(obj, message) {
     times.forEach(function (time) {

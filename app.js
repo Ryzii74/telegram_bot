@@ -2,6 +2,8 @@ var utils = require('./utils');
 var config = require('./config');
 var offset = 0;
 
+require('./libs/server')();
+
 utils.callMethod({method : 'getMe'}, function (err, data) {
     makeRequest();
 });
