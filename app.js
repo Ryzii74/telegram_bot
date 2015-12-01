@@ -29,6 +29,8 @@ function makeRequest() {
 }
 
 function newMessage(message) {
+    console.log('------------------------');
+    console.log(message.from, message.text);
     if (message.text) message.text = message.text.replace(config.bot.bot, '');
     if (message.from.id === message.chat.id) return gotPrivateMessage(message);
     gotChatMessage(message);

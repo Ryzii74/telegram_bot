@@ -87,12 +87,6 @@ Game.prototype.getHints = function (callback) {
 
 Game.prototype.addLevel = function (levelState) {
     var level = new Level(levelState);
-    /*level.hints.forEach(function (hint) {
-        hint.time = {
-            send : [],
-            value : hint
-        }
-    });*/
     this.levels.push(level);
 
     var message = 'Задание ' + level.levelNumber;
