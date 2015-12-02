@@ -1,7 +1,7 @@
 const testChat = "-33965431";
 const playersList = {
     ryzii : 59745477,
-    kiseniya : 'kiseniya',
+    kiseniya : 174422325,
     vental : 63910101,
     sloyArtur : 51822055,
     sloyRuslan : 'Grizzly174',
