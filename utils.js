@@ -14,13 +14,20 @@ module.exports.sendMessageToChat = function (message) {
 
 function callMethod (data, callback) {
     request({url : config.bot.url + data.method, form : data.form || {}}, function (err, response, body) {
-        var json = JSON.parse(body);
-        if (err || response.statusCode != 200 || !json || !json.ok) {
+        if (err || response.statusCode != 200) {
             console.log('error in response ' + data.method);
             err && console.log(err);
-            json && console.log(json);
+            return body && console.log(body);
         }
 
-        callback && callback(err, json);
+        try {
+            var json = JSON.parse(body);
+            if (!json || !json.ok) return;
+
+            callback && callback(err, json);
+        } catch (e) {
+            console.log('bad callMethod answer');
+            console.log(body);
+        }
     });
 };
