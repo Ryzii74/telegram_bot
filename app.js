@@ -1,5 +1,5 @@
 var utils = require('./utils');
-var config = require('./config');
+require('./config')();
 var offset = 0;
 
 require('./libs/tasks/chlen').init();
@@ -34,14 +34,14 @@ function makeRequest() {
 function newMessage(message) {
     console.log('------------------------');
     console.log(message.from, message.text);
-    if (message.text) message.text = message.text.replace(config.bot.bot, '');
+    if (message.text) message.text = message.text.replace(global.config.bot.bot, '');
     if (message.from.id === message.chat.id) return gotPrivateMessage(message);
     gotChatMessage(message);
 }
 
 function gotChatMessage(message) {
     if (!message.text) return;
-    if (message.chat.id != config.game.chat_id) {
+    if (message.chat.id != global.config.game.chat_id) {
         console.log('-------------------------------------');
         console.log('bad conf try to send message to bot');
         console.log(message);
@@ -53,12 +53,12 @@ function gotChatMessage(message) {
     message.args = message.text.replace(message.command + ' ', '').replace(message.command, '');
 
     try {
-        require(config.path_to_commands + message.command)(message.args, function (text) {
+        require(global.config.path_to_commands + message.command)(message.args, function (text) {
             sendMessage(message.chat.id, text, message.message_id);
-        });
+        }, message.from.id, message.chat.id);
     }
     catch (e) {
-        sendMessage(config.game.chat_id, "Неверно указан метод!", message.message_id);
+        sendMessage(global.config.game.chat_id, "Неверно указан метод!", message.message_id);
         console.log(e.message);
     }
 }
@@ -76,8 +76,8 @@ function sendMessage(chat_id, text, message_reply_id) {
 }
 
 function gotPrivateMessage(message) {
-    if (config.game.players.indexOf(message.from.id) === -1
-        && config.game.players.indexOf(message.from.username) === -1
+    if (global.config.game.players.indexOf(message.from.id) === -1
+        && global.config.game.players.indexOf(message.from.username) === -1
         && message.text !== '/getid') {
         console.log('-------------------------------------');
         console.log('bad player try to send message to bot');
@@ -88,21 +88,21 @@ function gotPrivateMessage(message) {
 
     try {
         if (message.text[0] && message.text[0] === '/') {
-            require(config.path_to_commands + message.text)(
+            require(global.config.path_to_commands + message.text)(
                 (message.text === '/getid') ? message.chat.id : message.text, function (text) {
                 sendMessage(message.chat.id, text, message.message_id);
-            });
+            }, message.from.id);
         } else {
-            require(config.path_to_commands + 'code')(message.text, function (text) {
+            require(global.config.path_to_commands + 'code')(message.text, function (text) {
                 utils.callMethod({
                     method: 'forwardMessage',
                     form: {
-                        chat_id: config.game.chat_id,
+                        chat_id: global.config.game.chat_id,
                         from_chat_id: message.chat.id,
                         message_id: message.message_id
                     }
                 }, function () {
-                    sendMessage(config.game.chat_id, text, message.message_id);
+                    sendMessage(global.config.game.chat_id, text, message.message_id);
                 });
 
                 sendMessage(message.chat.id, text, message.message_id);
@@ -128,7 +128,7 @@ process.stdin.on('readable', function() {
         gotChatMessage({
             text : chunk.toString().replace("\n", ''),
             chat : {
-                id : config.game.chat_id,
+                id : global.config.game.chat_id,
                 message_id: 0
             }
         });

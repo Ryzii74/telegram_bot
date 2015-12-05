@@ -1,4 +1,5 @@
 module.exports = function (params, callback, senderId) {
     if (senderId !== global.config.ownerId) return callback('Для вас недоступна данная команда!');
-    callback(params || "Отсутствует аргумент");
+    global.config.game.host = params;
+    callback(`Готово! Домен игры - ${global.config.game.host}`);
 };

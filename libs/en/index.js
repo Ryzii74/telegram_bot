@@ -1,7 +1,6 @@
 var utils = require('./../../utils');
 var enRequest = require('./request');
 var parser = require('./parser');
-var config = require('../../config');
 
 var times = [60, 180, 300];
 
@@ -224,12 +223,12 @@ Game.prototype.updateLevelState = function ($, body) {
 
 Game.prototype.login = function (callback) {
     require('request').post({
-        url : config.system.url.start + config.game.host + config.system.login,
-        form : config.game.auth,
+        url : global.config.system.url.start + global.config.game.host + global.config.system.login,
+        form : global.config.game.auth,
         headers : {
             "Cookie" : "lang=ru;",
-            "User-Agent" : config.system.userAgent,
-            "Host" : config.game.host
+            "User-Agent" : global.config.system.userAgent,
+            "Host" : global.config.game.host
         }
     }, function (err, response, data) {
         this.cookies = response.headers['set-cookie'].map(function (el) { return el.split(';')[0]; }).join('; ');

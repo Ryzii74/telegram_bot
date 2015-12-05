@@ -14,6 +14,7 @@ const playersList = {
 
 module.exports = {
     playersList : playersList,
+    ownerId : playersList.ryzii,
 
     bot : {
         url : "https://api.telegram.org/bot115498454:AAFPBBUy6Em-8DkDfp38UfBuH7sP28v6vV8/",
@@ -46,6 +47,5 @@ module.exports = {
         ]
     },
 
-    path_to_commands : './commands/',
-    path_to_private_commands : './privateCommands/'
+    path_to_commands : './commands/'
 };
