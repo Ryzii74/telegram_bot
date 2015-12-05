@@ -256,6 +256,7 @@ Game.prototype.update = function (data, callback) {
 Game.prototype.init = function (params, callback) {
     this.login(function () {
         if (this.state !== 'wait') return callback('Бот уже проинициализировал игру! ' + this.start.message);
+        this.state = 'inited';
         callback('Я к Вашим услугам!');
         this.update();
 
