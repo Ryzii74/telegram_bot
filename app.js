@@ -55,7 +55,7 @@ function gotChatMessage(message) {
     try {
         require(global.config.path_to_commands + message.command)(message.args, function (text) {
             sendMessage(message.chat.id, text, message.message_id);
-        }, message.from.id, message.chat.id);
+        }, message.from.id);
     }
     catch (e) {
         sendMessage(global.config.game.chat_id, "Неверно указан метод!", message.message_id);
