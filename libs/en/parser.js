@@ -14,6 +14,10 @@ function getStartState($) {
         return state;
     }
 
+    if ($('#txtLogin').length > 0) {
+        return false;
+    }
+
 
     var $timeToStart = $('#Panel_TimerHolder');
     if ($timeToStart.length > 0) {
