@@ -88,8 +88,11 @@ function gotPrivateMessage(message) {
 
     try {
         if (message.text[0] && message.text[0] === '/') {
-            require(global.config.path_to_commands + message.text)(
-                (message.text === '/getid') ? message.chat.id : message.text, function (text) {
+            message.command = message.text.split(' ')[0];
+            message.args = message.text.replace(message.command + ' ', '').replace(message.command, '');
+
+            require(global.config.path_to_commands + message.command)(
+                (message.text === '/getid') ? message.chat.id : message.args, function (text) {
                 sendMessage(message.chat.id, text, message.message_id);
             }, message.from.id);
         } else {
