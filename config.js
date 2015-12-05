@@ -12,40 +12,42 @@ const playersList = {
     aiv : 51493810
 };
 
-module.exports = {
-    playersList : playersList,
-    ownerId : playersList.ryzii,
+module.exports = function () {
+    return {
+        playersList: playersList,
+        ownerId: playersList.ryzii,
 
-    bot : {
-        url : "https://api.telegram.org/bot115498454:AAFPBBUy6Em-8DkDfp38UfBuH7sP28v6vV8/",
-        bot : '@testryziibot'
-    },
-
-    system : {
-        userAgent : "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.86 Safari/537.36",
-        url : {
-            start : 'http://',
-            end : '/gameengines/encounter/play/'
+        bot: {
+            url: "https://api.telegram.org/bot115498454:AAFPBBUy6Em-8DkDfp38UfBuH7sP28v6vV8/",
+            bot: '@testryziibot'
         },
-        login : "/Login.aspx"
-    },
 
-    game : {
-        host : 'demo.en.cx',
-        id : '23373',
-        chat_id : testChat,
-        auth : {
-            Login : "",
-            Password : "",
-            socialAssign : 0,
-            EnButton1 : "Вход",
-            ddlNetwork : 1
+        system: {
+            userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.86 Safari/537.36",
+            url: {
+                start: 'http://',
+                end: '/gameengines/encounter/play/'
+            },
+            login: "/Login.aspx"
         },
-        players : [
-            playersList.ryzii,
-            playersList.kiseniya
-        ]
-    },
 
-    path_to_commands : './commands/'
-};
+        game: {
+            host: 'demo.en.cx',
+            id: '23373',
+            chat_id: testChat,
+            auth: {
+                Login: "",
+                Password: "",
+                socialAssign: 0,
+                EnButton1: "Вход",
+                ddlNetwork: 1
+            },
+            players: [
+                playersList.ryzii,
+                playersList.kiseniya
+            ]
+        },
+
+        path_to_commands: './commands/'
+    };
+}

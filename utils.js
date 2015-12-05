@@ -19,7 +19,7 @@ function callMethod (data, callback) {
             return body && console.log(body);
         }
 
-        try {ca
+        try {
             var json = JSON.parse(body);
             if (!json || !json.ok) return;
 
