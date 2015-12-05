@@ -3,5 +3,6 @@ module.exports = function (params, callback, senderId) {
     if (!global.config.logins.hasOwnProperty(params)) return callback('Плохой выбор для регистрации, чувак!');
     global.config.game.auth.Login = global.config.logins[params].login;
     global.config.game.auth.Password = global.config.logins[params].password;
+    global.config.game.login = params;
     callback(`Готово! Логин для входа в игру - ${params}`);
 };
