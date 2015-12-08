@@ -60,6 +60,7 @@ function gotChatMessage(message) {
     catch (e) {
         sendMessage(global.config.game.chat_id, "Неверно указан метод!", message.message_id);
         console.log(e.message);
+        console.log(e.stack);
     }
 }
 
@@ -115,6 +116,7 @@ function gotPrivateMessage(message) {
     catch (e) {
         sendMessage(message.chat.id, "Неверно указан метод!", message.message_id);
         console.log(e.message);
+        console.log(e.stack);
     }
 }
 
@@ -133,6 +135,9 @@ process.stdin.on('readable', function() {
             chat : {
                 id : global.config.game.chat_id,
                 message_id: 0
+            },
+            from : {
+                id : global.config.ownerId
             }
         });
     }
