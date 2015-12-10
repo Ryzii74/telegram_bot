@@ -1,4 +1,5 @@
-var WORDS = {};
+global.WORDS = {};
+global.WORDS_ARRAY = [];
 
 module.exports = {
     init : function () {
@@ -7,6 +8,7 @@ module.exports = {
             data.split('\r\n').forEach(function (el) {
                 if (el.length === 0 || el.indexOf(' ') !== -1 || el.indexOf('-') !== -1) return;
                 WORDS[el] = true;
+                WORDS_ARRAY.push(el);
             });
             console.log('WORDS loaded');
         });
