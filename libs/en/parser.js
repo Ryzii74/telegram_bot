@@ -135,6 +135,7 @@ function parseHtmlString(message, header) {
         .replace( /^\s+/g, '');
 }
 function parseHtmlString(message, header) {
+    if (!message) return '';
     return message.replace(header && header[0], '')
         .replace(/<br\/>/g, '\n')
         .replace(/<p>/g, '')
