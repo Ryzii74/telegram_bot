@@ -4,12 +4,14 @@ const playersList = {
     kiseniya : 174422325,
     vental : 63910101,
     sloyArtur : 51822055,
-    sloyRuslan : 'Grizzly174',
     sloyNikita : 55787756,
     lyolya : 33916907,
     mashaMitina : 102450639,
     mitin : 33750740,
-    aiv : 51493810
+    aiv : 51493810,
+    pich : 109884847,
+    wanz : 46171958,
+    mihan : 44549083
 };
 
 module.exports = function () {
@@ -32,11 +34,11 @@ module.exports = function () {
         },
 
         game: {
-            host: 'demo.en.cx',
-            id: '23373',
-            chat_id: testChat,
+            host: 'chel.en.cx',
+            id: '53921',
+            chat_id: "-6170572",
             auth: {
-                Login: "",
+                Login: "ryzii",
                 Password: "",
                 socialAssign: 0,
                 EnButton1: "Вход",
