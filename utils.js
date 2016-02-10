@@ -11,13 +11,21 @@ module.exports.sendMessageToChat = function (message) {
     });
 };
 
+var counter = 0;
 function callMethod (data, callback) {
     request({url : global.config.bot.url + data.method, form : data.form || {}}, function (err, response, body) {
+        counter++;
         if (err || response.statusCode != 200) {
             console.log('error in response ' + data.method);
             err && console.log(err);
-            return body && console.log(body);
+
+            if (counter < 10) setTimeout(function () {
+                callMethod(data, callback);
+            }, 3000);
+            return;
         }
+
+        counter = 0;
 
         try {
             var json = JSON.parse(body);
