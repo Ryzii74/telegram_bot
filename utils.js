@@ -16,12 +16,15 @@ function callMethod (data, callback) {
     request({url : global.config.bot.url + data.method, form : data.form || {}}, function (err, response, body) {
         counter++;
         if (err || response.statusCode != 200) {
-            console.log('error in response ' + data.method);
-            err && console.log(err);
-
-            if (counter < 10) setTimeout(function () {
+            console.log(new Date(), 'error in response ' + data.method);
+            if (err) {
+		console.log(err);
+	    } else {
+		console.log(body);
+	    }
+            if (counter < 500) setTimeout(function () {
                 callMethod(data, callback);
-            }, 3000);
+            }, 5000);
             return;
         }
 
