@@ -324,8 +324,7 @@ Game.prototype.sendCode = function (code, callback) {
     var levelId = lastLevel.levelId;
 
     if (lastLevel.blockageInfo) {
-        return callback();
-        //return callback('Блокировка ответов! ' + lastLevel.blockageInfo);
+        return callback('Блокировка ответов! ' + lastLevel.blockageInfo);
     }
 
     this.update({
