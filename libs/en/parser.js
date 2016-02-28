@@ -40,7 +40,7 @@ function getLevelState($, body) {
 
     var taskData = getTaskParts($, body);
 
-    levelState.allCodes = $('h3:contains("сектор")').length && $('h3:contains("сектор")').next().text().replace('\t', '') || 'На уровне 1 сектор';
+    levelState.allCodes = $('h3:contains("сектор")').length && $('h3:contains("сектор")').next().text().replace(/\t/g, '').replace(/\r\n\r\n \r\n\r\n/g, '\r\n') || 'На уровне 1 сектор';
     levelState.isBlocked = $('.aside .blocked').length > 0;
     levelState.blockageInfo = $('.aside .blockageinfo').text().replace( /\s+$/g, '').replace( /^\s+/g, '').replace('\n', ' ') || '';
     levelState.levelId = $('.aside form input[name="LevelId"]').val();
