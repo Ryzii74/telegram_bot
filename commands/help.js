@@ -10,6 +10,7 @@ module.exports = function (params, callback) {
     text += '\nc (rus/en), code, просто "/" - вбить код';
     text += '\ncodes - информация по кодам';
     text += '\nsectors - полный список секторов';
+    text += '\nsectorsleft - список оставшихся секторов';
     text += '\nhelp - помощь по командам движка';
     text += '\nhelpsolve - помощь по вспомогательным командам';
 

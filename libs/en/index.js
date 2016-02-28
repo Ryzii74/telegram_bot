@@ -85,6 +85,14 @@ Game.prototype.getAllCodes = function () {
     return this.levels.slice(-1)[0].allCodes;
 };
 
+Game.prototype.getAllCodesLeft = function () {
+    return this.levels.slice(-1)[0].allCodes
+        .split('\r\n')
+        .filter(function (code) { return code.indexOf('код не введён') !== -1; })
+        .map(function (code) { return code.split(':')[0].replace('Сектор ', ''); })
+        .join(', ');
+};
+
 Game.prototype.getHints = function (callback) {
     if (!this.isStarted(callback)) return;
     var message = '';
@@ -408,6 +416,9 @@ module.exports.getHints = function (callback) {
 };
 module.exports.getAllCodes = function (callback) {
     return game.getAllCodes(callback);
+};
+module.exports.getAllCodesLeft = function (callback) {
+    return game.getAllCodesLeft(callback);
 };
 module.exports.getTime = function (callback) {
     return game.getLevelTime(callback);
