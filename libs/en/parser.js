@@ -40,7 +40,7 @@ function getLevelState($, body) {
 
     var taskData = getTaskParts($, body);
 
-    levelState.allCodes = $('h3:contains("сектор")').length && $('h3:contains("сектор")').text() || 'На уровне 1 сектор без названия';
+    levelState.allCodes = $('h3:contains("сектор")').length && $('h3:contains("сектор")').next().text().replace('\t', '') || 'На уровне 1 сектор';
     levelState.isBlocked = $('.aside .blocked').length > 0;
     levelState.blockageInfo = $('.aside .blockageinfo').text().replace( /\s+$/g, '').replace( /^\s+/g, '').replace('\n', ' ') || '';
     levelState.levelId = $('.aside form input[name="LevelId"]').val();
@@ -63,7 +63,6 @@ function getTaskParts($, body) {
     var bonuses = [];
     var codesCount = "На уровне 1 код";
     var codesLeft = "осталось закрыть 1";
-    var allCodes = 'Список всех кодов';
 
     parts.forEach(function (part) {
         var header = part.match(/<h3>([\s\S\d]+)<\/h3>/);
@@ -89,7 +88,7 @@ function getTaskParts($, body) {
 
         if (header && header[1].indexOf('сектор') !== -1) {
             codesCount = 'На уровне ' + header[1].match(/([\d]+)/)[1] + ' секторов';
-            codesLeft = header[1].match(/>\(([\s\S\d]+)\)</) && header[1].match(/>\(([\s\S\d]+)\)</)[1] || 'все';
+            codesLeft = header[1].match(/>\(([\s\S\d]+)\)</) && header[1].match(/>\(([\s\S\d]+)\)</)[1] || 'Необходимо закрыть все';
         }
 
         if (bonusHeader && bonusHeader[1].indexOf('Бонус') !== -1) {
@@ -115,7 +114,6 @@ function getTaskParts($, body) {
     });
 
     return {
-        allCodes : allCodes,
         codesCount : codesCount,
         codesLeft : codesLeft,
         task : task,
