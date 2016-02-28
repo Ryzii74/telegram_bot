@@ -86,12 +86,57 @@ Game.prototype.getAllCodes = function () {
 };
 
 Game.prototype.getAllCodesLeft = function () {
-    return this.levels.slice(-1)[0].allCodes
+    var data = {
+        start : -1,
+        end : -1,
+        result : []
+    };
+
+    this.levels.slice(-1)[0].allCodes
+        .replace( /^\s+/g, '')
+        .replace( /\s+$/g, '')
         .split('\r\n')
-        .filter(function (code) { return code.indexOf('код не введён') !== -1; })
-        .map(function (code) { return code.split(':')[0].replace('Сектор ', ''); })
-        .join(', ');
+        .forEach(function (code, index) {
+            if (code.indexOf('код не введён') === -1) {
+                checkQueue(data);
+                return;
+            }
+
+            var text = code.split(':')[0].replace('Сектор ', '');
+            if (Number(text) !== index + 1) {
+                checkQueue(data);
+                data.result.push(text);
+                return;
+            }
+
+            if (data.start === -1) {
+                data.start = Number(text);
+                return;
+            }
+
+            data.end = Number(text);
+        });
+
+    checkQueue(data);
+
+    return data.result.join(', ');
 };
+
+function checkQueue(data) {
+    if (data.start === -1) return;
+
+    if (data.end === -1) data.result.push(data.start);
+
+    if (data.start + 1 === data.end) {
+        data.result.push(data.start);
+        data.result.push(data.end);
+    }
+
+    if (data.start + 1 < data.end) data.result.push(data.start + '-' + data.end);
+
+    data.start = -1;
+    data.end = -1;
+}
 
 Game.prototype.getHints = function (callback) {
     if (!this.isStarted(callback)) return;
