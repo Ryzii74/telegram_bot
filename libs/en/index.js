@@ -108,7 +108,8 @@ Game.prototype.addLevel = function (levelState) {
     message += this.getHints();
     message += '\n\n';
     message += this.getLevelTime();
-    message += '\n' + this.getBonusesTasks();
+    message += '\n' + this.getCodesCount();
+    message += this.getBonusesTasks();
     if (level.blockageInfo) message += '\n' + level.blockageInfo;
 
     return message && utils.sendMessageToChat(message);
@@ -159,7 +160,6 @@ Game.prototype.getCodesCount = function () {
 
     var message = lastLevel.codesCount;
     message += '\n' + lastLevel.codesLeft;
-    message += '\n' + this.getBonusesCount();
 
     return message;
 };
@@ -381,14 +381,17 @@ module.exports.getStartMessage = function (params, callback) {
 module.exports.getTask = function (callback) {
     return game.getTask(callback);
 };
-module.exports.getCodesCount = function (callback) {
-    callback(game.getCodesCount());
+module.exports.getCodesCount = function () {
+    return game.getCodesCount();
 };
-module.exports.getBonusesTasks = function (callback) {
-    callback(game.getBonusesTasks());
+module.exports.getBonusesCount = function () {
+    return game.getBonusesCount();
 };
-module.exports.getBonusesHints = function (callback) {
-    callback(game.getBonusesHints());
+module.exports.getBonusesTasks = function () {
+    return game.getBonusesTasks();
+};
+module.exports.getBonusesHints = function () {
+    return game.getBonusesHints();
 };
 module.exports.init = function (params, callback) {
     game.init(params, callback);
