@@ -51,6 +51,7 @@ function gotChatMessage(message) {
 
     message.command = message.text.split(' ')[0];
     message.args = message.text.replace(message.command + ' ', '').replace(message.command, '');
+    if (message.command === '/') message.command = 'empty';
 
     try {
         require(global.config.path_to_commands + message.command)(message.args, function (text) {
