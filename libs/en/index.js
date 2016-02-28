@@ -216,6 +216,7 @@ Game.prototype.updateLevelState = function ($, body) {
     lastLevel.codesLeft = levelState.codesLeft;
     this.prevBonuses = lastLevel.bonuses;
     lastLevel.bonuses = levelState.bonuses;
+    lastLevel.allCodes = levelState.allCodes;
 
     lastLevel.hints.forEach(function (item, index) {
         if (levelState.hints[index].text) {
