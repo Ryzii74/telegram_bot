@@ -109,7 +109,7 @@ Game.prototype.addLevel = function (levelState) {
     message += '\n\n';
     message += this.getLevelTime();
     message += '\n' + this.getCodesCount();
-    message += this.getBonusesTasks();
+    message += '\n' + this.getBonusesTasks();
     if (level.blockageInfo) message += '\n' + level.blockageInfo;
 
     return message && utils.sendMessageToChat(message);
@@ -370,7 +370,7 @@ Game.prototype.sendCode = function (code, callback) {
 
 Game.prototype.getTask = function getTask(callback) {
     if (!this.isStarted(callback)) return;
-    return this.levels.slice(-1)[0].task;
+    return this.levels.slice(-1)[0].task || 'Возможно задание пустое!';
 };
 
 var game = new Game();
