@@ -230,7 +230,9 @@ Game.prototype.updateLevelState = function ($, body) {
 
     checkTimerMessage(lastLevel.time, 'До конца уровня осталось: ');
 
-    lastLevel.hints.filter(function (item) { return !item.text; }).forEach(function (hint, index) {
+
+    lastLevel.hints.forEach(function (hint, index) {
+        if (hint.text) return;
         checkTimerMessage(hint, 'До подсказки #' + (index + 1) + ' осталось: ');
     });
 };
