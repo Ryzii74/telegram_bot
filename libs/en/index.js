@@ -108,9 +108,7 @@ Game.prototype.addLevel = function (levelState) {
     message += this.getHints();
     message += '\n\n';
     message += this.getLevelTime();
-    message += '\n' + this.getCodesCount();
-    message += '\n' + this.getBonusesCount();
-    message += this.getBonusesTasks();
+    message += '\n' + this.getBonusesTasks();
     if (level.blockageInfo) message += '\n' + level.blockageInfo;
 
     return message && utils.sendMessageToChat(message);
