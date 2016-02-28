@@ -1,5 +1,5 @@
-var utils = require('./utils');
 global.config = require('./config');
+var utils = require('./utils');
 var offset = 0;
 
 require('./libs/tasks/chlen').init();
