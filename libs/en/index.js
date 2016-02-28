@@ -53,7 +53,7 @@ Game.prototype.updateStartState = function ($) {
     var state = parser.getStartState($);
     if (!state && !this.reconnect) {
         this.login(function () {
-            utils.sendMessageToChat('Подо мной кто-то зашел, но я перелогинился! Кто молодец? Я молодец! Но лучше не делайте так больше!');
+            //utils.sendMessageToChat('Подо мной кто-то зашел, но я перелогинился! Кто молодец? Я молодец! Но лучше не делайте так больше!');
             this.reconnect = true;
             this.updateStartState();
         }.bind(this));
@@ -184,7 +184,7 @@ Game.prototype.updateLevelState = function ($, body) {
 
     if (levelState.stopped) {
         if (!this.reconnect) return this.login(function () {
-            utils.sendMessageToChat('Подо мной кто-то зашел, но я перелогинился! Кто молодец? Я молодец! Но лучше не делайте так больше!');
+            //utils.sendMessageToChat('Подо мной кто-то зашел, но я перелогинился! Кто молодец? Я молодец! Но лучше не делайте так больше!');
             this.reconnect = true;
             this.update();
         }.bind(this));
