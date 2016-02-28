@@ -40,6 +40,7 @@ function getLevelState($, body) {
 
     var taskData = getTaskParts($, body);
 
+    levelState.allCodes = $('h3:contains("сектор")').length && $('h3:contains("сектор")').text() || 'На уровне 1 сектор без названия';
     levelState.isBlocked = $('.aside .blocked').length > 0;
     levelState.blockageInfo = $('.aside .blockageinfo').text().replace( /\s+$/g, '').replace( /^\s+/g, '').replace('\n', ' ') || '';
     levelState.levelId = $('.aside form input[name="LevelId"]').val();
@@ -62,6 +63,7 @@ function getTaskParts($, body) {
     var bonuses = [];
     var codesCount = "На уровне 1 код";
     var codesLeft = "осталось закрыть 1";
+    var allCodes = 'Список всех кодов';
 
     parts.forEach(function (part) {
         var header = part.match(/<h3>([\s\S\d]+)<\/h3>/);
@@ -113,6 +115,7 @@ function getTaskParts($, body) {
     });
 
     return {
+        allCodes : allCodes,
         codesCount : codesCount,
         codesLeft : codesLeft,
         task : task,

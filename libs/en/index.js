@@ -9,6 +9,7 @@ function Level (data) {
     this.levelId = data.levelId;
     this.levelNumber = data.levelNumber;
     this.task = data.task;
+    this.allCodes = data.allCodes;
     this.time = {
         value : data.time,
         send : [],
@@ -78,6 +79,10 @@ Game.prototype.updateStartState = function ($) {
 Game.prototype.getLevelTime = function (callback) {
     if (!this.isStarted(callback)) return;
     return 'До окончания задания: ' + this.levels.slice(-1)[0].time.message || "без автоперехода";
+};
+
+Game.prototype.getAllCodes = function () {
+    return this.levels.slice(-1)[0].allCodes;
 };
 
 Game.prototype.getHints = function (callback) {
@@ -397,6 +402,9 @@ module.exports.sendCode = function (params, callback) {
 };
 module.exports.getHints = function (callback) {
     return game.getHints(callback);
+};
+module.exports.getAllCodes = function (callback) {
+    return game.getAllCodes(callback);
 };
 module.exports.getTime = function (callback) {
     return game.getLevelTime(callback);
