@@ -5,6 +5,7 @@ module.exports = function (params, callback) {
     text += '\nchlen - расчлененки ( слово кол-воБукв слово кол-воБукв)';
     text += '\nцезарь - шифр цезаря (фраза)';
     text += '\nmask - поиск по маске (? - одна буква, * - любое количество букв)';
+    text += '\nmorzelist - список символов азбуки Морзе';
 
     callback(text);
 };
