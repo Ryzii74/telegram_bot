@@ -1,5 +1,5 @@
 module.exports = function (params, callback) {
-    var letters = params.split(' ');
+    var letters = params.replace('—', '--').split(' ');
 
     var words = { ru : '', en : '' };
     letters.forEach(function (letter) {
