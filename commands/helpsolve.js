@@ -6,6 +6,7 @@ module.exports = function (params, callback) {
     text += '\nцезарь - шифр цезаря (фраза)';
     text += '\nmask - поиск по маске (? - одна буква, * - любое количество букв)';
     text += '\nmorzelist - список символов азбуки Морзе';
+    text += '\nmorze - перевод азбуки Морзе';
 
     callback(text);
 };
