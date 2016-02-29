@@ -18,13 +18,13 @@ module.exports = function (params, callback) {
     text += '\n.--- = й / j';
     text += '\n-    = т / t';
     text += '\n-.   = н / n';
-    text += '\n-.-  = к / k';
-    text += '\n-.-. = ц / c';
-    text += '\n--   = м / m';
     text += '\n-..  = д / d';
     text += '\n-... = б / b';
     text += '\n-..- = ь / x';
+    text += '\n-.-  = к / k';
+    text += '\n-.-. = ц / c';
     text += '\n-.-- = ы / y';
+    text += '\n--   = м / m';
     text += '\n--.  = г / g';
     text += '\n--.. = з / z';
     text += '\n--.- = щ / q';
