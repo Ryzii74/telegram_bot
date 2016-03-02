@@ -1,7 +1,7 @@
 module.exports.getStartState = getStartState;
 module.exports.getLevelState = getLevelState;
 
-function getStartState($) {
+function getStartState($, body) {
     var state = {
         started : false,
         time : 30000,
@@ -16,6 +16,11 @@ function getStartState($) {
 
     if ($('#txtLogin').length > 0) {
         return false;
+    }
+
+    if (body.indexOf('/simplelogin.aspx?') !== -1) {
+        state.error = 'Не удалось залогиниться в движке!';
+        return state;
     }
 
 

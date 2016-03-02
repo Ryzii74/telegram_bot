@@ -49,16 +49,20 @@ function Game() {
     };
 }
 
-Game.prototype.updateStartState = function ($) {
-    var state = parser.getStartState($);
+Game.prototype.updateStartState = function ($, body) {
+    var state = parser.getStartState($, body);
     if (!state && !this.reconnect) {
         this.login(function () {
             //utils.sendMessageToChat('Подо мной кто-то зашел, но я перелогинился! Кто молодец? Я молодец! Но лучше не делайте так больше!');
             this.reconnect = true;
-            this.updateStartState();
+            this.updateStartState($, body);
         }.bind(this));
     } else {
         this.reconnect = false;
+    }
+
+    if (state.error) {
+        return utils.sendMessageToChat(state.error);
     }
 
     if (state.started) {
@@ -311,7 +315,7 @@ Game.prototype.update = function (data, callback) {
     data = data || {};
     enRequest(data, this.cookies, function ($, body) {
         if (!_this.isStarted()) {
-            _this.updateStartState($);
+            _this.updateStartState($, body);
         }
 
         if (_this.isStarted()) {
