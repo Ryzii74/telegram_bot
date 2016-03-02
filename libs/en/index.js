@@ -6,6 +6,7 @@ var times = [60, 180, 300];
 
 
 function Level (data) {
+    this.name = data.name;
     this.levelId = data.levelId;
     this.levelNumber = data.levelNumber;
     this.task = data.task;
@@ -431,7 +432,11 @@ Game.prototype.getTask = function getTask(callback) {
 
     var level = this.levels.slice(-1)[0];
     if (!level) return 'Уровень не найден!';
-    return level.task || 'Возможно задание пустое!';
+
+    var message = 'Название: ' + level.name + '\n';
+    message += level.task || 'Возможно задание пустое!';
+
+    return message;
 };
 
 var game = new Game();
