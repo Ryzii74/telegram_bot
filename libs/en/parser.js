@@ -70,15 +70,15 @@ function getTaskParts($, body) {
         var bonusCorrectHeader = part.match(/<h3 class="color_correct">([\s\S\d]+)<\/h3>/);
         var cursiv = part.match(/<span class="color_dis">([\s\S\d]+)<\/span>/);
 
-        if (header && header[1].indexOf('Задание') !== -1) {
+        if (header && header[1] && header[1].indexOf('Задание') !== -1) {
             task = parseHtmlString(part, header);
         }
 
-        if (header && header[1].indexOf('Подсказка') !== -1) {
+        if (header && header[1] && header[1].indexOf('Подсказка') !== -1) {
             hints.push({text : parseHtmlString(part, header)});
         }
 
-        if (cursiv && cursiv[1].indexOf('Подсказка') !== -1) {
+        if (cursiv && cursiv[1] && cursiv[1].indexOf('Подсказка') !== -1) {
             hints.push({
                 value : cursiv[1].match(/"StartCounter":([\d]+)/)[1],
                 send : [],
@@ -86,12 +86,12 @@ function getTaskParts($, body) {
             });
         }
 
-        if (header && header[1].indexOf('сектор') !== -1) {
+        if (header && header[1] && header[1].indexOf('сектор') !== -1) {
             codesCount = 'На уровне ' + header[1].match(/([\d]+)/)[1] + ' секторов';
             codesLeft = header[1].match(/>\(([\s\S\d]+)\)</) && header[1].match(/>\(([\s\S\d]+)\)</)[1] || 'Необходимо закрыть все';
         }
 
-        if (bonusHeader && bonusHeader[1].indexOf('Бонус') !== -1) {
+        if (bonusHeader && bonusHeader[1] && bonusHeader[1].indexOf('Бонус') !== -1) {
             var bonus = {
                 completed : false,
                 name : parseHtmlString(bonusHeader[1].split(':')[1]),
@@ -102,7 +102,7 @@ function getTaskParts($, body) {
         }
 
 
-        if (bonusCorrectHeader) {
+        if (bonusCorrectHeader && bonusCorrectHeader[1]) {
             var name = bonusCorrectHeader[1].split(':');
             name = name[1] || name[0];
             name = name.split('<span')[0];
