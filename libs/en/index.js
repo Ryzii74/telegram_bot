@@ -424,7 +424,10 @@ Game.prototype.sendCode = function (code, callback) {
 
 Game.prototype.getTask = function getTask(callback) {
     if (!this.isStarted(callback)) return;
-    return this.levels.slice(-1)[0].task || 'Возможно задание пустое!';
+
+    var level = this.levels.slice(-1)[0];
+    if (!level) return 'Уровень не найден!';
+    return level.task || 'Возможно задание пустое!';
 };
 
 var game = new Game();
