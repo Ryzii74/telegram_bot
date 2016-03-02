@@ -90,7 +90,7 @@ function gotPrivateMessage(message) {
 
     try {
         if (message.text[0] && message.text[0] === '/') {
-            message.command = message.text.split(' ')[0];
+            message.command = message.text.split(' ')[0].split('@')[0];
             message.args = message.text.replace(message.command + ' ', '').replace(message.command, '');
 
             require(global.config.path_to_commands + message.command)(
