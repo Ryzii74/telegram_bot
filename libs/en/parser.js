@@ -103,9 +103,13 @@ function getTaskParts($, body) {
 
 
         if (bonusCorrectHeader) {
+            var name = bonusCorrectHeader[1].split(':');
+            name = name[1] || name[0];
+            name = name.split('<span')[0];
+
             var bonus = {
                 completed : true,
-                name : parseHtmlString(bonusCorrectHeader[1].split(':')[1].split('<span')[0]),
+                name : parseHtmlString(name),
                 task : parseHtmlString(part.replace(/<h3([\s\S\d]+)<\/h3>/, '')),
                 reward : bonusCorrectHeader[1].match(/награда ([\d\s\S]+)\)</) && bonusCorrectHeader[1].match(/награда ([\d\s\S]+)\)</)[1] || 'нету'
             };
