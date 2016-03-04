@@ -23,6 +23,14 @@ function getMe (callback) {
     callMethod({method : 'getMe'}, callback);
 }
 
+module.exports.forwardMessage = function (params, callback) {
+    params.chat_id = params.chat_id || global.config.game.chat_id;
+    callMethod({
+        method: 'forwardMessage',
+        form: params
+    }, callback);
+};
+
 module.exports.getUpdates = getUpdates;
 function getUpdates (callback) {
       callMethod({

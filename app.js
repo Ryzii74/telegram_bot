@@ -78,13 +78,9 @@ function gotPrivateMessage(message) {
             }, message.from.id);
         } else {
             require(global.config.path_to_commands + 'code')(message.text, function (text) {
-                Telegram.callMethod({
-                    method: 'forwardMessage',
-                    form: {
-                        chat_id: global.config.game.chat_id,
-                        from_chat_id: message.chat.id,
-                        message_id: message.message_id
-                    }
+                Telegram.forwardMessage({
+                    from_chat_id: message.chat.id,
+                    message_id: message.message_id
                 }, function () {
                     Telegram.sendMessage({ text : text, reply_to_message_id : message.message_id });
                 });
