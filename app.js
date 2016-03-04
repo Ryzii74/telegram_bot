@@ -1,35 +1,15 @@
 global.config = require('./config');
-var utils = require('./utils');
+var Telegram = require('./telegram');
 var offset = 0;
 
 require('./libs/tasks/chlen').init();
 //require('./libs/server')();
 
-utils.callMethod({method : 'getMe'}, function (err, data) {
-    makeRequest();
-});
-
-function makeRequest() {
-    utils.callMethod({
-        method : 'getUpdates',
-        form : {
-            offset : offset,
-            timeout : 100
-        }
-    }, function (err, data) {
-        if (err || !data.ok) {
-            err && console.log('telegram request error', err);
-            data && console.log('telegram request data', data);
-        } else {
-            data.result.forEach(function (message) {
-                newMessage(message.message);
-                offset = message.update_id + 1;
-            });
-        }
-
-        makeRequest();
+Telegram.init(function (err, messages) {
+    messages.forEach(function (message) {
+        newMessage(message.message);
     });
-}
+});
 
 function newMessage(message) {
     console.log('------------------------');
@@ -55,26 +35,21 @@ function gotChatMessage(message) {
 
     try {
         require(global.config.path_to_commands + message.command)(message.args, function (text) {
-            sendMessage(message.chat.id, text, message.message_id);
+            Telegram.sendMessage({
+                chat_id : message.chat.id,
+                text : text,
+                reply_to_message_id : message.message_id
+            });
         }, message.from.id);
     }
     catch (e) {
-        sendMessage(global.config.game.chat_id, "Неверно указан метод!", message.message_id);
+        Telegram.sendMessage({
+            text : "Неверно указан метод!",
+            reply_to_message_id : message.message_id
+        });
         console.log(e.message);
         console.log(e.stack);
     }
-}
-
-function sendMessage(chat_id, text, message_reply_id) {
-    if (!text) return;
-    utils.callMethod({
-        method: 'sendMessage',
-        form: {
-            chat_id: chat_id,
-            text: text,
-            reply_to_message_id: message_reply_id
-        }
-    });
 }
 
 function gotPrivateMessage(message) {
@@ -95,11 +70,15 @@ function gotPrivateMessage(message) {
 
             require(global.config.path_to_commands + message.command)(
                 (message.text === '/getid') ? message.chat.id : message.args, function (text) {
-                sendMessage(message.chat.id, text, message.message_id);
+                Telegram.sendMessage({
+                    chat_id : message.chat.id,
+                    text : text,
+                    reply_to_message_id: message.message_id
+                });
             }, message.from.id);
         } else {
             require(global.config.path_to_commands + 'code')(message.text, function (text) {
-                utils.callMethod({
+                Telegram.callMethod({
                     method: 'forwardMessage',
                     form: {
                         chat_id: global.config.game.chat_id,
@@ -107,15 +86,23 @@ function gotPrivateMessage(message) {
                         message_id: message.message_id
                     }
                 }, function () {
-                    sendMessage(global.config.game.chat_id, text, message.message_id);
+                    Telegram.sendMessage({ text : text, reply_to_message_id : message.message_id });
                 });
 
-                sendMessage(message.chat.id, text, message.message_id);
+                Telegram.sendMessage({
+                    chat_id: message.chat.id,
+                    text: text,
+                    reply_to_message_id: message.message_id
+                });
             });
         }
     }
     catch (e) {
-        sendMessage(message.chat.id, "Неверно указан метод!", message.message_id);
+        Telegram.sendMessage({
+            chat_id : message.chat.id,
+            text : "Неверно указан метод!",
+            reply_to_message_id : message.message_id
+        });
         console.log(e.message);
         console.log(e.stack);
     }

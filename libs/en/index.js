@@ -1,4 +1,4 @@
-var utils = require('./../../utils');
+var Telegram = require('./../../telegram');
 var enRequest = require('./request');
 var parser = require('./parser');
 
@@ -54,7 +54,7 @@ Game.prototype.updateStartState = function ($, body) {
     var state = parser.getStartState($, body);
     if (!state && !this.reconnect) {
         this.login(function () {
-            //utils.sendMessageToChat('Подо мной кто-то зашел, но я перелогинился! Кто молодец? Я молодец! Но лучше не делайте так больше!');
+            //Telegram.sendMessage({ text : 'Подо мной кто-то зашел, но я перелогинился! Кто молодец? Я молодец! Но лучше не делайте так больше!' });
             this.reconnect = true;
             this.updateStartState($, body);
         }.bind(this));
@@ -63,7 +63,7 @@ Game.prototype.updateStartState = function ($, body) {
     }
 
     if (state.error) {
-        return utils.sendMessageToChat(state.error);
+        return Telegram.sendMessage({ text : state.error });
     }
 
     if (state.started) {
@@ -75,7 +75,7 @@ Game.prototype.updateStartState = function ($, body) {
 
     if (!this.start.messageSent) {
         this.start.messageSent = true;
-        return utils.sendMessageToChat(this.start.message);
+        return Telegram.sendMessage({ text : this.start.message });
     }
 
     checkTimerMessage(this.start.time, 'До начала игры осталось: ');
@@ -170,7 +170,7 @@ Game.prototype.addLevel = function (levelState) {
     message += '\n' + this.getBonusesTasks();
     if (level.blockageInfo) message += '\n' + level.blockageInfo;
 
-    return message && utils.sendMessageToChat(message);
+    return message && Telegram.sendMessage({ text : message });
 };
 
 Game.prototype.getBonusesHints = function () {
@@ -233,7 +233,7 @@ Game.prototype.findNewHints = function (levelState) {
                 message += 'Подсказка №' + (i + 1) + '. ' + levelState.hints[i].text + '\n';
             }
         }
-        message && utils.sendMessageToChat(message);
+        message && Telegram.sendMessage({ text : message });
     }
 };
 
@@ -242,12 +242,12 @@ Game.prototype.updateLevelState = function ($, body) {
 
     if (levelState.stopped) {
         if (!this.reconnect) return this.login(function () {
-            //utils.sendMessageToChat('Подо мной кто-то зашел, но я перелогинился! Кто молодец? Я молодец! Но лучше не делайте так больше!');
+            //Telegram.sendMessage({ text : 'Подо мной кто-то зашел, но я перелогинился! Кто молодец? Я молодец! Но лучше не делайте так больше!' });
             this.reconnect = true;
             this.update();
         }.bind(this));
 
-        if (this.state !== 'stop') utils.sendMessageToChat('Такое ощущение, что игра кончилась');
+        if (this.state !== 'stop') Telegram.sendMessage({ text : 'Такое ощущение, что игра кончилась' });
         this.state = 'stop';
         return;
     } else {
@@ -488,7 +488,7 @@ function checkTimerMessage(obj, message) {
     times.forEach(function (time) {
         if (obj.value < time && obj.send.indexOf(time) === -1) {
             obj.send.push(time);
-            utils.sendMessageToChat(message + Math.floor(time / 60) + ' минут');
+            Telegram.sendMessage({ text : message + Math.floor(time / 60) + ' минут' });
         }
     });
 }
