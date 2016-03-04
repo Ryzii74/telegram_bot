@@ -82,7 +82,7 @@ function gotPrivateMessage(message) {
                     from_chat_id: message.chat.id,
                     message_id: message.message_id
                 }, function () {
-                    Telegram.sendMessage({ text : text, reply_to_message_id : message.message_id });
+                    Telegram.sendMessage({ text : text });
                 });
 
                 Telegram.sendMessage({
