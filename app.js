@@ -114,19 +114,3 @@ process.on('uncaughtException', function(err) {
     console.log(err.stack);
     console.log('------------------------');
 });
-
-process.stdin.on('readable', function() {
-    var chunk = process.stdin.read();
-    if (chunk !== null) {
-        gotChatMessage({
-            text : chunk.toString().replace("\n", ''),
-            chat : {
-                id : global.config.game.chat_id,
-                message_id: 0
-            },
-            from : {
-                id : global.config.ownerId
-            }
-        });
-    }
-});
