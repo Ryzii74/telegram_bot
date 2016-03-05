@@ -6,6 +6,7 @@ var times = [60, 180, 300];
 
 
 function Level (data) {
+    this.messages = data.messages;
     this.name = data.name;
     this.levelId = data.levelId;
     this.levelNumber = data.levelNumber;
@@ -170,6 +171,8 @@ Game.prototype.addLevel = function (levelState) {
     message += '\n' + this.getBonusesTasks();
     if (level.blockageInfo) message += '\n' + level.blockageInfo;
 
+    message += '\n\n' + this.getMessages();
+
     return message && utils.sendMessageToChat(message);
 };
 
@@ -203,6 +206,13 @@ Game.prototype.getBonusesTasks = function () {
     result = this.getBonusesCount() +'\n' + result;
 
     return result;
+};
+
+Game.prototype.getMessages = function () {
+    var lastLevel = this.levels.slice(-1)[0];
+    if (!lastLevel) return 'Уровень не найден!';
+
+    return 'Сообщения: ' + lastLevel.messages;
 };
 
 Game.prototype.getBonusesCount = function () {
@@ -273,6 +283,7 @@ Game.prototype.updateLevelState = function ($, body) {
     this.prevBonuses = lastLevel.bonuses;
     lastLevel.bonuses = levelState.bonuses;
     lastLevel.allCodes = levelState.allCodes;
+    lastLevel.messages = levelState.messages;
 
     lastLevel.hints.forEach(function (item, index) {
         if (levelState.hints[index].text) {
@@ -458,6 +469,9 @@ module.exports.getBonusesTasks = function () {
 };
 module.exports.getBonusesHints = function () {
     return game.getBonusesHints();
+};
+module.exports.getMessages = function () {
+    return game.getMessages();
 };
 module.exports.init = function (params, callback) {
     game.init(params, callback);
