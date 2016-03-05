@@ -67,8 +67,11 @@ function callMethod (data, callback) {
                 console.log(body);
             }
 
-            body = JSON.parse(body);
-            if (body && !body.ok && body.error_code === 400) return;
+            try {
+                body = JSON.parse(body);
+
+                if (body && !body.ok && body.error_code === 400) return;
+            } catch (e) {}
 
             if (counter < 500) setTimeout(function () {
                 callMethod(data, callback);
