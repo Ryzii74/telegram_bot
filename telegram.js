@@ -68,9 +68,10 @@ function callMethod (data, callback) {
             }
 
             try {
-                body = JSON.parse(body);
-
-                if (body && !body.ok && body.error_code === 400) return;
+                if (body) {
+                    body = JSON.parse(body);
+                    if (!body.ok && body.error_code === 400) return;
+                }
             } catch (e) {}
 
             if (counter < 500) setTimeout(function () {
