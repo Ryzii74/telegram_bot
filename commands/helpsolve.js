@@ -7,6 +7,7 @@ module.exports = function (params, callback) {
     text += '\nmask - поиск по маске (? - одна буква, * - любое количество букв)';
     text += '\nmorzelist - список символов азбуки Морзе';
     text += '\nmorze - перевод азбуки Морзе';
+    text += '\nassociations / ass - ассоциации между двумя словами (через пробел)';
 
     callback(text);
 };
