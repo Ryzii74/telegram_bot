@@ -19,7 +19,7 @@ function getLastPoint(callback) {
 }
 
 module.exports.findCoordinates = function (text) {
-    var reg = /([\d]+)°[\s]+([\d]+)'[\s]([\d.]+)"/g;
+    var reg = /([\d]+)°[ ]*([\d]+)'[ ]*([\d.]+)"/;
     var matches = [], found;
     while (found = reg.exec(text)) {
         text = text.split(found[0])[1];
@@ -47,9 +47,9 @@ module.exports.getRoute = function (coordinates, callback) {
     getLastPoint((err, data) => {
         if (err) return callback("Ошибка построения пути!");
 
-        var route = `http://static-maps.yandex.ru/1.x/?lang=en-US&l=map&size=600,400&pt=${data.lng},${data.lat},flag`;
+        var route = `http://static-maps.yandex.ru/1.x/?lang=en-US&l=map&size=600,400&pt=${data.lng},${data.lat},vkgrm`;
         coordinates.forEach(coords => {
-            route += `~${coords.lng},${coords.lon},flag`
+            route += `~${coords.lng},${coords.lat},flag`
         });
 
         callback(null, route);
