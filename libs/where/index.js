@@ -22,7 +22,7 @@ module.exports.findCoordinates = function (text) {
     var reg = /([\d]+)°[ ]*([\d]+)'[ ]*([\d.]+)"/;
     var matches = [], found;
     while (found = reg.exec(text)) {
-        text = text.split(found[0])[1];
+        text = text.split(found[0]) && text.split(found[0])[1];
         matches.push(found);
     }
 
@@ -40,16 +40,16 @@ module.exports.findCoordinates = function (text) {
 };
 
 function calcCoord(arr) {
-    return Number(arr[1]) + Number(arr[2]) / 60 + Number(arr[3]) / 3600
+    return Number(arr[1] || 0) + Number(arr[2] || 0) / 60 + Number(arr[3] || 0) / 3600
 }
 
 module.exports.getRoute = function (coordinates, callback) {
     getLastPoint((err, data) => {
-        if (err) return callback("Ошибка построения пути!");
+        if (err || !data) return callback("Ошибка построения пути!");
 
         var route = `http://static-maps.yandex.ru/1.x/?lang=en-US&l=map&size=600,400&pt=${data.lng},${data.lat},vkgrm`;
-        coordinates.forEach(coords => {
-            route += `~${coords.lng},${coords.lat},flag`
+        coordinates.forEach && coordinates.forEach(coords => {
+            if (coords) route += `~${coords.lng},${coords.lat},flag`
         });
 
         callback(null, route);
