@@ -19,8 +19,29 @@ function getLastPoint(callback) {
 }
 
 module.exports.findCoordinates = function (text) {
-    return false;
+    var reg = /([\d]+)°[\s]+([\d]+)'[\s]([\d.]+)"/g;
+    var matches = [], found;
+    while (found = reg.exec(text)) {
+        text = text.split(found[0])[1];
+        matches.push(found);
+    }
+
+    if (!matches.length) return false;
+
+    var coords = [];
+    for (var i = 0; i < matches.length; i+=2) {
+        coords.push({
+            lat : calcCoord(matches[i]),
+            lng : calcCoord(matches[i + 1])
+        })
+    }
+
+    return coords;
 };
+
+function calcCoord(arr) {
+    return Number(arr[1]) + Number(arr[2]) / 60 + Number(arr[3]) / 3600
+}
 
 module.exports.getRoute = function (coordinates, callback) {
     getLastPoint((err, data) => {
