@@ -162,14 +162,21 @@ Game.prototype.addLevel = function (levelState) {
     var level = new Level(levelState);
     this.levels.push(level);
 
+    var task = this.getTask();
+
     var message = 'Задание ' + level.levelNumber;
-    message += '\n' + this.getTask() + '\n\n';
+    message += '\n' + task + '\n\n';
     message += this.getHints();
     message += '\n\n';
     message += this.getLevelTime();
     message += '\n' + this.getCodesCount();
     message += '\n' + this.getBonusesTasks();
     if (level.blockageInfo) message += '\n' + level.blockageInfo;
+
+    var coordinates = require('../where').findCoordinates(task);
+    if (coordinates) {
+        require('../where').getRoute(coordinates, (err, data) => data && Telegram.sendMessage({ text : data }))
+    }
 
     message += '\n\n' + this.getMessages();
     return message && Telegram.sendMessage({ text : message });
