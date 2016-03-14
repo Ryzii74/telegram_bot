@@ -36,15 +36,21 @@ function markAlreaddyHinted(obj) {
     });
 }
 
+function returnSomeData(data, callback) {
+    if (callback) {
+        return callback(data)
+    } else {
+        return data;
+    }
+}
+
 function Game() {
     this.reconnect = false;
     this.state = 'wait';
     this.levels = [];
     this.getters = {
         task : (level, callback) => {
-            var message = 'Название: ' + level.name + '\n';
-            message += level.task || 'Возможно задание пустое!';
-            callback(message);
+            returnSomeData(`Название: ${level.name}\n${level.task || 'Возможно задание пустое'}`, callback);
         }
     };
     this.start = {
@@ -170,7 +176,7 @@ Game.prototype.addLevel = function (levelState) {
     this.levels.push(level);
 
     var message = 'Задание ' + level.levelNumber;
-    message += '\n' + this.getTask() + '\n\n';
+    message += '\n' + this.getters.task(level) + '\n\n';
     message += this.getHints();
     message += '\n\n';
     message += this.getLevelTime();
