@@ -47,7 +47,7 @@ module.exports.getRoute = function (coordinates, callback) {
     getLastPoint((err, data) => {
         if (err || !data) return callback("Ошибка построения пути!");
 
-        var route = `http://static-maps.yandex.ru/1.x/?lang=en-US&l=map&size=600,400&pt=${data.lng},${data.lat},vkgrm`;
+        var route = `http://static-maps.yandex.ru/1.x/?lang=ru-RU&l=map&size=600,400&pt=${data.lng},${data.lat},vkgrm`;
         coordinates.forEach && coordinates.forEach(coords => {
             if (coords) route += `~${coords.lng},${coords.lat},flag`
         });
