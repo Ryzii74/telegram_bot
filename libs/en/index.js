@@ -28,6 +28,20 @@ function Level (data) {
     this.bonuses = data.bonuses;
     this.codesCount = data.codesCount;
     this.codesLeft = data.codesLeft;
+
+    this.getters = {
+        task : callback => {
+            return returnSomeData(`Название: ${this.name}\n${this.task || 'Возможно задание пустое'}`, callback);
+        }
+    };
+}
+
+function returnSomeData(data, callback) {
+    if (callback) {
+        return callback(data);
+    } else {
+        return data;
+    }
 }
 
 function markAlreaddyHinted(obj) {
@@ -36,23 +50,10 @@ function markAlreaddyHinted(obj) {
     });
 }
 
-function returnSomeData(data, callback) {
-    if (callback) {
-        return callback(data)
-    } else {
-        return data;
-    }
-}
-
 function Game() {
     this.reconnect = false;
     this.state = 'wait';
     this.levels = [];
-    this.getters = {
-        task : (level, callback) => {
-            returnSomeData(`Название: ${level.name}\n${level.task || 'Возможно задание пустое'}`, callback);
-        }
-    };
     this.start = {
         time : {
             value : 30000,
@@ -176,7 +177,7 @@ Game.prototype.addLevel = function (levelState) {
     this.levels.push(level);
 
     var message = 'Задание ' + level.levelNumber;
-    message += '\n' + this.getters.task(level) + '\n\n';
+    message += '\n' + level.getters.task() + '\n\n';
     message += this.getHints();
     message += '\n\n';
     message += this.getLevelTime();
@@ -459,7 +460,7 @@ module.exports.getLastLevelData = function (params, callback) {
     var level = game.levels.slice(-1)[0];
     if (!level) return callback('Уровень не найден!');
 
-    game.getters[params.name](level, callback);
+    level.getters[params.name](callback);
 };
 
 module.exports.getStartMessage = function (params, callback) {
