@@ -40,6 +40,13 @@ function Game() {
     this.reconnect = false;
     this.state = 'wait';
     this.levels = [];
+    this.getters = {
+        task : (level, callback) => {
+            var message = 'Название: ' + level.name + '\n';
+            message += level.task || 'Возможно задание пустое!';
+            callback(message);
+        }
+    };
     this.start = {
         time : {
             value : 30000,
@@ -437,25 +444,20 @@ Game.prototype.sendCode = function (code, callback) {
     });
 };
 
-Game.prototype.getTask = function getTask(callback) {
-    if (!this.isStarted(callback)) return;
-
-    var level = this.levels.slice(-1)[0];
-    if (!level) return 'Уровень не найден!';
-
-    var message = 'Название: ' + level.name + '\n';
-    message += level.task || 'Возможно задание пустое!';
-
-    return message;
-};
-
 var game = new Game();
+
+module.exports.getLastLevelData = function (params, callback) {
+    if (!params.name) return callback('Ошибка указания параметров запроса!');
+    if (!game.isStarted()) return callback('Игра еще не началась!');
+
+    var level = game.levels.slice(-1)[0];
+    if (!level) return callback('Уровень не найден!');
+
+    game.getters[params.name](level, callback);
+};
 
 module.exports.getStartMessage = function (params, callback) {
     game.getStartMessage(params, callback);
-};
-module.exports.getTask = function (callback) {
-    return game.getTask(callback);
 };
 module.exports.getCodesCount = function () {
     return game.getCodesCount();

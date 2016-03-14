@@ -53,7 +53,7 @@ function getUpdates (callback) {
           callback(null, data.result);
           getUpdates(callback);
       });
-};
+}
 
 var counter = 0;
 function callMethod (data, callback) {
