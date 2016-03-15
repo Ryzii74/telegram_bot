@@ -185,7 +185,7 @@ Game.prototype.init = function (params, callback) {
         var _this = this;
         this.requestInterval = setInterval(function () {
             _this.update();
-        }, 5000);
+        }, global.config.system.gameUpdatingInterval);
     }.bind(this));
 };
 
