@@ -1,54 +1,10 @@
 var Telegram = require('./../../telegram');
 var enRequest = require('./request');
 var parser = require('./parser');
+var _ = require('underscore');
 
 var times = [60, 180, 300];
-
-
-function Level (data) {
-    this.messages = data.messages;
-    this.name = data.name;
-    this.levelId = data.levelId;
-    this.levelNumber = data.levelNumber;
-    this.task = data.task;
-    this.allCodes = data.allCodes;
-    this.time = {
-        value : data.time,
-        send : [],
-        message : data.timeMessage
-    };
-    markAlreaddyHinted(this.time);
-    this.blockageInfo = data.blockageInfo;
-    this.hints = data.hints;
-    this.hints.forEach(function (hint) {
-        if (hint.text) return;
-        markAlreaddyHinted(hint);
-    });
-
-    this.bonuses = data.bonuses;
-    this.codesCount = data.codesCount;
-    this.codesLeft = data.codesLeft;
-
-    this.getters = {
-        task : callback => {
-            return returnSomeData(`Название: ${this.name}\n${this.task || 'Возможно задание пустое'}`, callback);
-        }
-    };
-}
-
-function returnSomeData(data, callback) {
-    if (callback) {
-        return callback(data);
-    } else {
-        return data;
-    }
-}
-
-function markAlreaddyHinted(obj) {
-    times.forEach(function (time) {
-        if (time > obj.value) { obj.send.push(time); }
-    });
-}
+var Level = require('./level');
 
 function Game() {
     this.reconnect = false;
@@ -96,153 +52,21 @@ Game.prototype.updateStartState = function ($, body) {
     checkTimerMessage(this.start.time, 'До начала игры осталось: ');
 };
 
-Game.prototype.getLevelTime = function (callback) {
-    if (!this.isStarted(callback)) return;
-    return 'До окончания задания: ' + this.levels.slice(-1)[0].time.message || "без автоперехода";
-};
-
-Game.prototype.getAllCodes = function () {
-    return this.levels.slice(-1)[0].allCodes;
-};
-
-Game.prototype.getAllCodesLeft = function () {
-    var data = {
-        start : -1,
-        end : -1,
-        result : []
-    };
-
-    this.levels.slice(-1)[0].allCodes
-        .replace( /^\s+/g, '')
-        .replace( /\s+$/g, '')
-        .split('\r\n')
-        .forEach(function (code, index) {
-            if (code.indexOf('код не введён') === -1) {
-                checkQueue(data);
-                return;
-            }
-
-            var text = code.split(':')[0].replace('Сектор ', '');
-            if (Number(text) !== index + 1) {
-                checkQueue(data);
-                data.result.push(text);
-                return;
-            }
-
-            if (data.start === -1) {
-                data.start = Number(text);
-                return;
-            }
-
-            data.end = Number(text);
-        });
-
-    checkQueue(data);
-
-    return data.result.join(', ');
-};
-
-function checkQueue(data) {
-    if (data.start === -1) return;
-
-    if (data.end === -1) data.result.push(data.start);
-
-    if (data.start + 1 === data.end) {
-        data.result.push(data.start);
-        data.result.push(data.end);
-    }
-
-    if (data.start + 1 < data.end) data.result.push(data.start + '-' + data.end);
-
-    data.start = -1;
-    data.end = -1;
-}
-
-Game.prototype.getHints = function (callback) {
-    if (!this.isStarted(callback)) return;
-    var message = '';
-    this.levels.slice(-1)[0].hints.forEach(function (item, index) {
-        if (item.text) {
-            message += 'Подсказка #' + (index + 1) + '.\n' + item.text + '\n';
-        } else {
-            message += 'Подсказка #' + (index + 1) + ' через ' + item.message + '\n';
-        }
-    });
-
-    return message || 'Подсказок нет!';
-};
-
 Game.prototype.addLevel = function (levelState) {
     var level = new Level(levelState);
     this.levels.push(level);
 
     var message = 'Задание ' + level.levelNumber;
     message += '\n' + level.getters.task() + '\n\n';
-    message += this.getHints();
+    message += level.getters.hints();
     message += '\n\n';
-    message += this.getLevelTime();
-    message += '\n' + this.getCodesCount();
-    message += '\n' + this.getBonusesTasks();
+    message += level.getters.time();
+    message += '\n' + level.getters.codesCount();
+    message += '\n' + level.getters.bonusesTask();
     if (level.blockageInfo) message += '\n' + level.blockageInfo;
 
-    message += '\n\n' + this.getMessages();
+    message += '\n\n' + level.getters.messages();
     return message && Telegram.sendMessage({ text : message });
-};
-
-Game.prototype.getBonusesHints = function () {
-    var lastLevel = this.levels.slice(-1)[0];
-    if (!lastLevel) return 'Уровень не найден!';
-
-    var result = '';
-    lastLevel.bonuses.forEach(function (bonus) {
-        if (!bonus.completed || !bonus.task) return;
-        result += 'Бонус "' + bonus.name + '"\n';
-        result += bonus.task + '\n\n';
-    });
-    if (result === '') result = 'Выполненных бонусов с подсказками нет';
-    result = this.getBonusesCount() +'\n' + result;
-
-    return result;
-};
-
-Game.prototype.getBonusesTasks = function () {
-    var lastLevel = this.levels.slice(-1)[0];
-    if (!lastLevel) return 'Уровень не найден!';
-
-    var result = '';
-    lastLevel.bonuses.forEach(function (bonus) {
-        if (!bonus.task || bonus.completed) return;
-        result += 'Задание на "' + bonus.name + '"\n';
-        result += bonus.task + '\n\n';
-    });
-    if (result === '') result = 'Невыполненных бонусов с заданиями нет';
-    result = this.getBonusesCount() +'\n' + result;
-
-    return result;
-};
-
-Game.prototype.getMessages = function () {
-    var lastLevel = this.levels.slice(-1)[0];
-    if (!lastLevel) return 'Уровень не найден!';
-
-    return 'Сообщения: ' + lastLevel.messages;
-};
-
-Game.prototype.getBonusesCount = function () {
-    var lastLevel = this.levels.slice(-1)[0];
-    if (!lastLevel) return 'Уровень не найден!';
-
-    return 'Бонусов выполнено ' + lastLevel.bonuses.filter(function (bonus) { return bonus.completed; }).length + ' из ' + lastLevel.bonuses.length;
-};
-
-Game.prototype.getCodesCount = function () {
-    var lastLevel = this.levels.slice(-1)[0];
-    if (!lastLevel) return 'Уровень не найден!';
-
-    var message = lastLevel.codesCount;
-    message += '\n' + lastLevel.codesLeft;
-
-    return message;
 };
 
 Game.prototype.findNewHints = function (levelState) {
@@ -460,26 +284,10 @@ module.exports.getLastLevelData = function (params, callback) {
     var level = game.levels.slice(-1)[0];
     if (!level) return callback('Уровень не найден!');
 
-    level.getters[params.name](callback);
+    return level.getters[params.name](callback);
 };
-
 module.exports.getStartMessage = function (params, callback) {
     game.getStartMessage(params, callback);
-};
-module.exports.getCodesCount = function () {
-    return game.getCodesCount();
-};
-module.exports.getBonusesCount = function () {
-    return game.getBonusesCount();
-};
-module.exports.getBonusesTasks = function () {
-    return game.getBonusesTasks();
-};
-module.exports.getBonusesHints = function () {
-    return game.getBonusesHints();
-};
-module.exports.getMessages = function () {
-    return game.getMessages();
 };
 module.exports.init = function (params, callback) {
     game.init(params, callback);
@@ -489,18 +297,6 @@ module.exports.stop = function (callback) {
 };
 module.exports.sendCode = function (params, callback) {
     game.sendCode(params, callback);
-};
-module.exports.getHints = function (callback) {
-    return game.getHints(callback);
-};
-module.exports.getAllCodes = function (callback) {
-    return game.getAllCodes(callback);
-};
-module.exports.getAllCodesLeft = function (callback) {
-    return game.getAllCodesLeft(callback);
-};
-module.exports.getTime = function (callback) {
-    return game.getLevelTime(callback);
 };
 module.exports.getLevels = function () {
     return game.levels;
