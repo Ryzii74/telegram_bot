@@ -176,17 +176,15 @@ Game.prototype.update = function (data, callback) {
 };
 
 Game.prototype.init = function (params, callback) {
-    this.login(function () {
+    this.login(() => {
         if (this.state !== 'wait') return callback('Бот уже проинициализировал игру! ' + this.start.message);
+
         this.state = 'notstart';
         callback('Я к Вашим услугам!');
-        this.update();
 
-        var _this = this;
-        this.requestInterval = setInterval(function () {
-            _this.update();
-        }, global.config.system.gameUpdatingInterval);
-    }.bind(this));
+        this.update();
+        this.requestInterval = setInterval(this.update, global.config.system.gameUpdatingInterval);
+    });
 };
 
 Game.prototype.getStartMessage = function (params, callback) {
