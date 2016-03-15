@@ -36,7 +36,7 @@ function Level (data) {
             var completedBonusesCount = this.bonuses.filter(function (bonus) { return bonus.completed; }).length;
             return returnSomeData(`Бонусов выполнено ${completedBonusesCount} из ${this.bonuses.length}`, callback);
         },
-        bonusesTask : callback => {
+        bonusesTasks : callback => {
             var result = '';
             this.bonuses.forEach(function (bonus) {
                 if (!bonus.task || bonus.completed) return;
@@ -145,6 +145,7 @@ function returnSomeData(data, callback) {
 }
 
 function markAlreaddyHinted(obj) {
+    var times = [60, 180, 300];
     times.forEach(function (time) {
         if (time > obj.value) { obj.send.push(time); }
     });

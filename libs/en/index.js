@@ -61,7 +61,7 @@ Game.prototype.addLevel = function (levelState) {
     message += `${level.getters.hints()}\n\n`;
     message += level.getters.time();
     message += `\n${level.getters.codesCount()}`;
-    message += `\n${level.getters.bonusesTask()}`;
+    message += `\n${level.getters.bonusesTasks()}`;
     if (level.blockageInfo) message += `\n${level.blockageInfo}`;
 
     message += `\n\n${level.getters.messages()}`;
@@ -158,8 +158,9 @@ Game.prototype.login = function (callback) {
 };
 
 Game.prototype.update = function (data, callback) {
+    var _this = this;
     enRequest(data || {}, this.cookies, ($, body) => {
-        this.isStarted() ? this.updateLevelState($, body) : this.updateStartState($, body);
+        _this.isStarted() ? _this.updateLevelState($, body) : _this.updateStartState($, body);
         callback && callback($, body);
     });
 };
@@ -172,7 +173,7 @@ Game.prototype.init = function (params, callback) {
         callback('Я к Вашим услугам!');
 
         this.update();
-        this.requestInterval = setInterval(this.update, global.config.system.gameUpdatingInterval);
+        this.requestInterval = setInterval(this.update.bind(this), global.config.system.gameUpdatingInterval);
     });
 };
 
@@ -265,11 +266,21 @@ Game.prototype.sendCode = function (code, callback) {
 var game = new Game();
 
 module.exports.getLastLevelData = function (params, callback) {
-    if (!params.name) return callback('Ошибка указания параметров запроса!');
-    if (!game.isStarted()) return callback('Игра еще не началась!');
+    if (!params.name) {
+        callback && callback('Ошибка указания параметров запроса!');
+        return 'Ошибка указания параметров запроса!';
+    }
+
+    if (!game.isStarted()) {
+        callback && callback('Игра еще не началась!');
+        return 'Игра еще не началась!';
+    }
 
     var level = game.levels.slice(-1)[0];
-    if (!level) return callback('Уровень не найден!');
+    if (!level) {
+        callback && callback('Уровень не найден!');
+        return 'Уровень не найден!';
+    }
 
     return level.getters[params.name](callback);
 };
