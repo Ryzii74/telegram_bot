@@ -159,18 +159,8 @@ Game.prototype.login = function (callback) {
 };
 
 Game.prototype.update = function (data, callback) {
-    var _this = this;
-
-    data = data || {};
-    enRequest(data, this.cookies, function ($, body) {
-        if (!_this.isStarted()) {
-            _this.updateStartState($, body);
-        }
-
-        if (_this.isStarted()) {
-            _this.updateLevelState($, body);
-        }
-
+    enRequest(data || {}, this.cookies, ($, body) => {
+        this.isStarted() ? this.updateLevelState($, body) : this.updateStartState($, body);
         callback && callback($, body);
     });
 };
