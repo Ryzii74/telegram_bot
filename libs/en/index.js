@@ -152,10 +152,10 @@ Game.prototype.login = function (callback) {
             "User-Agent" : global.config.system.userAgent,
             "Host" : global.config.game.host
         }
-    }, function (err, response, data) {
+    }, (err, response, data) => {
         this.cookies = response.headers['set-cookie'].map(function (el) { return el.split(';')[0]; }).join('; ');
         callback();
-    }.bind(this));
+    });
 };
 
 Game.prototype.update = function (data, callback) {
