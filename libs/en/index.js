@@ -24,11 +24,11 @@ function Game() {
 Game.prototype.updateStartState = function ($, body) {
     var state = parser.getStartState($, body);
     if (!state && !this.reconnect) {
-        this.login(function () {
+        this.login(() => {
             //Telegram.sendMessage({ text : 'Подо мной кто-то зашел, но я перелогинился! Кто молодец? Я молодец! Но лучше не делайте так больше!' });
             this.reconnect = true;
             this.updateStartState($, body);
-        }.bind(this));
+        });
     } else {
         this.reconnect = false;
     }
@@ -56,16 +56,15 @@ Game.prototype.addLevel = function (levelState) {
     var level = new Level(levelState);
     this.levels.push(level);
 
-    var message = 'Задание ' + level.levelNumber;
-    message += '\n' + level.getters.task() + '\n\n';
-    message += level.getters.hints();
-    message += '\n\n';
+    var message = `Задание ${level.levelNumber}\n`;
+    message += `${level.getters.task()}\n\n`;
+    message += `${level.getters.hints()}\n\n`;
     message += level.getters.time();
-    message += '\n' + level.getters.codesCount();
-    message += '\n' + level.getters.bonusesTask();
-    if (level.blockageInfo) message += '\n' + level.blockageInfo;
+    message += `\n${level.getters.codesCount()}`;
+    message += `\n${level.getters.bonusesTask()}`;
+    if (level.blockageInfo) message += `\n${level.blockageInfo}`;
 
-    message += '\n\n' + level.getters.messages();
+    message += `\n\n${level.getters.messages()}`;
     return message && Telegram.sendMessage({ text : message });
 };
 
@@ -77,7 +76,7 @@ Game.prototype.findNewHints = function (levelState) {
         var message = '';
         for (var i = oldCount; i < newCount; i++) {
             if (levelState.hints[i].text) {
-                message += 'Подсказка №' + (i + 1) + '. ' + levelState.hints[i].text + '\n';
+                message += `Подсказка №${i + 1}. ${levelState.hints[i].text}\n`;
             }
         }
         message && Telegram.sendMessage({ text : message });
