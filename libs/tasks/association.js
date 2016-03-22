@@ -3,8 +3,7 @@ var request = require('request');
 module.exports.get = get;
 function get(word1, word2, callback) {
     getWord(word1, (err, word1Data) => {
-        if (err) return callback(err);
-        if (!word2) return callback(word1Data);
+        if (err || !word2) return callback(err, word1Data);
 
         getWord(word2, (err, word2Data) => {
             if (err) return callback(err);
