@@ -143,6 +143,7 @@ Game.prototype.updateLevelState = function ($, body) {
 };
 
 Game.prototype.login = function (callback) {
+    console.log('login to en');
     require('request').post({
         url : global.config.system.url.start + global.config.game.host + global.config.system.login,
         form : global.config.game.auth,
