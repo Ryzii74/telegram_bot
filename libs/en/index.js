@@ -25,12 +25,8 @@ Game.prototype.updateStartState = function ($, body) {
     var state = parser.getStartState($, body);
     if (!state && !this.reconnect) {
         this.login(() => {
-            //Telegram.sendMessage({ text : 'Подо мной кто-то зашел, но я перелогинился! Кто молодец? Я молодец! Но лучше не делайте так больше!' });
-            this.reconnect = true;
             this.updateStartState($, body);
         });
-    } else {
-        this.reconnect = false;
     }
 
     if (state.error) {
@@ -88,16 +84,12 @@ Game.prototype.updateLevelState = function ($, body) {
 
     if (levelState.stopped) {
         if (!this.reconnect) return this.login(function () {
-            //Telegram.sendMessage({ text : 'Подо мной кто-то зашел, но я перелогинился! Кто молодец? Я молодец! Но лучше не делайте так больше!' });
-            this.reconnect = true;
             this.update();
         }.bind(this));
 
         if (this.state !== 'stop') Telegram.sendMessage({ text : 'Такое ощущение, что игра кончилась' });
         this.state = 'stop';
         return;
-    } else {
-        this.reconnect = false;
     }
 
     if ((this.levels.length === 0 ||
@@ -143,6 +135,8 @@ Game.prototype.updateLevelState = function ($, body) {
 };
 
 Game.prototype.login = function (callback) {
+    this.reconnect = true;
+
     console.log('login to en');
     require('request').post({
         url : global.config.system.url.start + global.config.game.host + global.config.system.login,
@@ -153,6 +147,8 @@ Game.prototype.login = function (callback) {
             "Host" : global.config.game.host
         }
     }, (err, response, data) => {
+        this.reconnect = false;
+
         if (err || !response.headers['set-cookie']) {
             console.log(err, response.headers['set-cookie'], data);
             return console.log('Не удалось залогиниться!');
