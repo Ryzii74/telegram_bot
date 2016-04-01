@@ -153,6 +153,11 @@ Game.prototype.login = function (callback) {
             "Host" : global.config.game.host
         }
     }, (err, response, data) => {
+        if (err || !response.headers['set-cookie']) {
+            console.log(err, response.headers['set-cookie'], data);
+            return console.log('Не удалось залогиниться!');
+        }
+
         this.cookies = response.headers['set-cookie'].map(function (el) { return el.split(';')[0]; }).join('; ');
         callback();
     });
