@@ -159,7 +159,9 @@ Game.prototype.login = function (callback) {
 
 Game.prototype.update = function (data, callback) {
     var _this = this;
-    enRequest(data || {}, this.cookies, ($, body) => {
+    enRequest(data || {}, this.cookies, (err, $, body) => {
+        if (err) return console.log('Не удалось распарсить страницу', err);
+
         _this.isStarted() ? _this.updateLevelState($, body) : _this.updateStartState($, body);
         callback && callback($, body);
     });

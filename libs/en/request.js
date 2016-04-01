@@ -13,7 +13,9 @@ module.exports = function (data, cookies, callback) {
             "Host" : global.config.game.host
         }
     }, function (err, request, body) {
+        if (err || !body) return callback(err || 'no_body');
+
         var $ = cheerio.load(body);
-        callback && callback($, body);
+        callback && callback(null, $, body);
     });
 };
