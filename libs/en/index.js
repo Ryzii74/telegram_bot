@@ -89,6 +89,7 @@ Game.prototype.updateLevelState = function ($, body) {
 
         if (this.state !== 'stop') Telegram.sendMessage({ text : 'Такое ощущение, что игра кончилась' });
         this.state = 'stop';
+        this.stop();
         return;
     }
 
@@ -199,7 +200,11 @@ Game.prototype.stop = function (callback) {
     };
 
     clearInterval(this.requestInterval);
-    callback('Приятно было с Вами поиграть!');
+    if (callback) {
+        callback('Приятно было с Вами поиграть!');
+    } else {
+        Telegram.sendMessage({ text : 'Приятно было с Вами поиграть' });
+    }
 };
 
 Game.prototype.isStarted = function (callback) {
