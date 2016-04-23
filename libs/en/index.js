@@ -8,6 +8,7 @@ var Level = require('./level');
 
 function Game() {
     this.reconnect = false;
+    this.stopLogging = false;
     this.state = 'wait';
     this.levels = [];
     this.start = {
@@ -138,6 +139,7 @@ Game.prototype.updateLevelState = function ($, body) {
 Game.prototype.login = function (callback) {
     this.reconnect = true;
 
+    if (this.stopLogging) return;
     console.log('login to en');
     require('request').post({
         url : global.config.system.url.start + global.config.game.host + global.config.system.login,
@@ -187,6 +189,7 @@ Game.prototype.getStartMessage = function (params, callback) {
 };
 
 Game.prototype.stop = function (callback) {
+    this.stopLogging = true;
     this.state = 'wait';
     this.levels = [];
     this.start = {
