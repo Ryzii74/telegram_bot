@@ -14,11 +14,21 @@ function get(word1, word2, callback) {
 }
 
 function getWord(word, callback) {
-    request.post('http://sociation.org/ajax/word_associations_combined/', { form : {
-        word : word,
-        back : false,
-        max_count : 0
-    }}, (err, response, data) => {
+    request.post('https://sociation.org/ajax/word_associations/', {
+        headers: {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.96 Safari/537.36',
+            'Origin': 'https://sociation.org',
+            'Referrer': 'ttps://sociation.org/',
+            'Sec-Fetch-Dest': 'empty',
+            'Sec-Fetch-Site': 'same-origin',
+            'Sec-Fetch-Mode': 'cors',
+            'X-Requested-With': 'XMLHttpRequest',
+        },
+        form : {
+            word : word,
+            max_count : 0
+        },
+    }, (err, response, data) => {
         if (err || !data) return callback(err || 'response error, no data');
 
         data = JSON.parse(data);
